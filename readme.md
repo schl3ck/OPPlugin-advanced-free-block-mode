@@ -44,7 +44,7 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 
 # Changelog
 ## v1.1 - 2021-08-01
-Added adbility to move the pivot point for rotations
+Add adbility to move the pivot point for rotations
 
 ## v1.0 - 2021-07-24
 Initial release
