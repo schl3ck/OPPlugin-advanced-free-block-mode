@@ -4,11 +4,23 @@ bool settingShowInterface = false;
 [Setting name="Show helper coordinate system"]
 bool settingShowCoordinateSystem = false;
 
-[Setting name="Move helper coordinate system"]
+[Setting name="Cordinate system scale" min=10 max=250]
+int settingCoordinateSystemScale = 50;
+
+[Setting name="Position of helper coordinate system and pivot position"]
 vec2 settingCoordinateSystemPosition = vec2(200, 200);
 
 [Setting name="Move helper coordinate system" description="Use this to easily move the position."]
 bool settingMoveCoordinateSystem = false;
+
+[Setting name="Show pivot position"]
+bool settingShowPivotRenderer = false;
+
+[Setting name="Position of rendered pivot relative to the coordinate system" description="\"Center\" renders it on top of the coordinate system"]
+PivotRendererPosition settingPivotRelativePosition = PivotRendererPosition::Center;
+
+[Setting name="Pivot scale" min=10 max=250]
+int settingPivotRendererScale = 50;
 
 [Setting name="Display rotations in degrees (otherwise in radians)"]
 bool settingRotationInDeg = true;
@@ -37,10 +49,12 @@ float Slope2Angle = Math::ToDeg(Math::Atan(16.0f / 32.0f));
 
 // machine precision of floats. is probably smaller but this should suffice
 // when I make it smaller then there are sometimes problems in the function Angle
-float epsilon = 0.0002;
+float epsilon = 0.0001;
 
 Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
 CoordinateSystem@ coordinateSystem = CoordinateSystem();
+Pivot@ pivotRenderer = Pivot();
+vec2 backgroundSize = vec2();
 
 enum NudgeMode {
   Position,
@@ -56,6 +70,14 @@ enum RotationAxis {
   Yaw,
   Pitch,
   Roll
+}
+
+enum PivotRendererPosition {
+  Top,
+  Left,
+  Center,
+  Right,
+  Bottom
 }
 
 void OnSettingsLoad(Settings::Section& section) {
@@ -120,13 +142,133 @@ void Render() {
     return;
   }
 
-  if (settingShowCoordinateSystem)
-    coordinateSystem.Render(localCoords, cursorYaw, cursorPitch, cursorRoll);
+  backgroundSize = renderOverlayBackground();
+
+  if (settingShowPivotRenderer) {
+    vec2 pos = vec2(settingCoordinateSystemPosition);
+    if (settingPivotRelativePosition == PivotRendererPosition::Right) {
+      pos.x += coordinateSystem.size.x;
+    }
+    if (settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+      pos.y += coordinateSystem.size.y;
+    }
+    pivotRenderer.Render(
+      pos,
+      cursorYaw,
+      cursorPitch,
+      cursorRoll,
+      renderCoordinateSystem,
+      vec3(0, 0, 0),
+      getTileSize(pivotRenderer.size)
+    );
+  }
+
+  renderCoordinateSystem(false);
+}
+void renderCoordinateSystem(bool fromPivotRenderer) {
+  if (!settingShowCoordinateSystem) return;
+  if (
+    fromPivotRenderer
+    && settingPivotRelativePosition != PivotRendererPosition::Center
+  )
+    return;
+  if (
+    !fromPivotRenderer
+    && settingPivotRelativePosition == PivotRendererPosition::Center
+    && settingShowPivotRenderer
+  )
+    return;
+
+  vec2 pos = vec2(settingCoordinateSystemPosition);
+  if (settingPivotRelativePosition == PivotRendererPosition::Left) {
+    pos.x += pivotRenderer.size.x;
+  }
+  if (settingPivotRelativePosition == PivotRendererPosition::Top) {
+    pos.y += pivotRenderer.size.y;
+  }
+  coordinateSystem.Render(
+    pos,
+    localCoords,
+    cursorYaw,
+    cursorPitch,
+    cursorRoll,
+    getTileSize(coordinateSystem.size)
+  );
+}
+vec2 renderOverlayBackground() {
+  if (!settingShowCoordinateSystem && !settingShowPivotRenderer) return vec2();
+  vec2 coordinateSize = coordinateSystem.size;
+  vec2 pivotSize = pivotRenderer.size;
+  vec2 size = vec2();
+  if (!settingShowPivotRenderer) size = coordinateSize;
+  else if (!settingShowCoordinateSystem) size = pivotSize;
+  else {
+    // both are displayed
+    if (settingPivotRelativePosition == PivotRendererPosition::Top
+      || settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+      size = vec2(
+        Math::Max(coordinateSize.x, pivotSize.x),
+        coordinateSize.y + pivotSize.y
+      );
+    } else if (settingPivotRelativePosition == PivotRendererPosition::Left
+      || settingPivotRelativePosition == PivotRendererPosition::Right) {
+      size = vec2(
+        coordinateSize.x + pivotSize.x,
+        Math::Max(coordinateSize.y, pivotSize.y)
+      );
+    } else {
+      size = vec2(
+        Math::Max(coordinateSize.x, pivotSize.x),
+        Math::Max(coordinateSize.y, pivotSize.y)
+      );
+    }
+  }
+  
+  nvg::BeginPath();
+  nvg::FillColor(vec4(1, 1, 1, 0.2));
+  nvg::RoundedRect(
+    settingCoordinateSystemPosition.x,
+    settingCoordinateSystemPosition.y,
+    size.x,
+    size.y,
+    10
+  );
+  nvg::Fill();
+  nvg::StrokeWidth(3);
+  nvg::StrokeColor(vec4(1, 1, 1, 1));
+  nvg::Stroke();
+
+  return size;
+}
+vec2 getTileSize(vec2 ownSize) {
+  if (settingPivotRelativePosition == PivotRendererPosition::Top
+    || settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+    return vec2(backgroundSize.x, ownSize.y);
+  } else if (settingPivotRelativePosition == PivotRendererPosition::Left
+    || settingPivotRelativePosition == PivotRendererPosition::Right) {
+    return vec2(ownSize.x, backgroundSize.y);
+  } else {
+    return backgroundSize;
+  }
 }
 
 void RenderMenu() {
   CGameCtnEditorFree@ editor = GetMapEditor();
   if (UI::BeginMenu("\\$f90" + Icons::Gavel + "\\$z Advanced Free Block Mode")) {
+    bool current = settingShowInterface
+      && settingShowCoordinateSystem
+      && settingShowPivotRenderer;
+    if (UI::MenuItem(
+      "Show/hide all",
+      "",
+      current,
+      editor !is null
+    )) {
+      settingShowInterface = !current;
+      settingShowCoordinateSystem = !current;
+      settingShowPivotRenderer = !current;
+    }
+
     if (UI::MenuItem(
       "Show Interface",
       "",
@@ -145,12 +287,42 @@ void RenderMenu() {
       settingShowCoordinateSystem = !settingShowCoordinateSystem;
     }
 
+    if (UI::MenuItem(
+      "Show pivot position",
+      "",
+      settingShowPivotRenderer,
+      editor !is null
+    )) {
+      settingShowPivotRenderer = !settingShowPivotRenderer;
+    }
+
     UI::EndMenu();
   }
 }
 
 void RenderInterface() {
-  coordinateSystem.RenderInterface();
+  if (settingMoveCoordinateSystem) {
+    UI::SetNextWindowPos(
+      int(settingCoordinateSystemPosition.x),
+      int(settingCoordinateSystemPosition.y)
+    );
+    UI::Begin(
+      "\\$f90" + Icons::ExpandArrowsAlt + "\\$z Coordinate System",
+      UI::WindowFlags::NoResize
+      | UI::WindowFlags::NoCollapse
+      | UI::WindowFlags::NoDocking
+    );
+    UI::SetWindowSize(
+      vec2(Math::Max(backgroundSize.x, 100.), Math::Max(backgroundSize.y, 100.)),
+      UI::Cond::Always
+    );
+    settingCoordinateSystemPosition = UI::GetWindowPos();
+
+    // UI::Text("V " + Camera.m_CurrentVAngle); // pitch
+    // UI::Text("H " + Camera.m_CurrentHAngle); // yaw
+
+    UI::End();
+  }
 
   CGameCtnEditorFree@ editor = GetMapEditor();
   if (editor is null) return;
@@ -417,7 +589,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
     }
   } else if (key == VirtualKey::I) {
     if (nudgeMode == NudgeMode::Position) {
-      move.z -= settingStepSizePosition 
+      move.z += settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
       rotationDelta = stepSizeRad;
@@ -425,7 +597,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
     }
   } else if (key == VirtualKey::K) {
     if (nudgeMode == NudgeMode::Position) {
-      move.z += settingStepSizePosition 
+      move.z -= settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
       rotationDelta = -stepSizeRad;
@@ -480,89 +652,4 @@ bool OnKeyPress(bool down, VirtualKey key) {
     handled = true;
   }
   return handled;
-}
-
-CGameCtnEditorFree@ GetMapEditor() {
-  return cast<CGameCtnEditorFree>(GetApp().Editor);
-}
-
-vec3 vec4To3(vec4 v) {
-  return vec3(v.x, v.y, v.z);
-}
-
-vec3 rotateVec3(vec3 v, float yaw, float pitch, float roll) {
-  mat4 Ry = mat4::Rotate(yaw, vec3(0, 1, 0));
-  mat4 Rz = mat4::Rotate(pitch, vec3(0, 0, 1));
-  mat4 Rx = mat4::Rotate(roll, vec3(1, 0, 0));
-
-  mat4 R = Ry * Rz * Rx;
-  return vec4To3(R * v);
-}
-
-float[] rotateRotations(
-  float yaw,
-  float pitch,
-  float roll,
-  float delta,
-  RotationAxis axis,
-  bool local
-) {
-  // roll is local by definition
-  if (local && axis == RotationAxis::Roll) return {yaw, pitch, roll + delta};
-  // yaw is global by definition
-  if (!local && axis == RotationAxis::Yaw) return {yaw + delta, pitch, roll};
-
-  // base axes
-  vec3 xAxis = vec3(1, 0, 0);
-  vec3 yAxis = vec3(0, 1, 0);
-  vec3 zAxis = vec3(0, 0, 1);
-
-  // axes in current rotation
-  vec3 x = rotateVec3(xAxis, yaw, pitch, roll);
-  vec3 y = rotateVec3(yAxis, yaw, pitch, roll);
-  vec3 z = rotateVec3(zAxis, yaw, pitch, roll);
-
-  vec3 ax;
-  if (local) {
-    if (axis == RotationAxis::Yaw) ax = y;
-    else if (axis == RotationAxis::Pitch) ax = z;
-  } else {
-    if (axis == RotationAxis::Pitch) ax = zAxis;
-    else if (axis == RotationAxis::Roll) ax = xAxis;
-  }
-
-  // axes in wanted rotation
-  mat4 m = mat4::Rotate(delta, ax);
-  vec3 rX = vec4To3(m * x);
-  vec3 rY = vec4To3(m * y);
-  vec3 rZ = vec4To3(m * z);
-
-  // project rX to xz plane
-  vec3 rX_xz = vec3(rX.x, 0, rX.z);
-  // yaw = angle between xAxis & projected vec
-  float yaw2 = Angle(xAxis, rX_xz) * Sign(rX.z) * -1;
-  // pitch = angle between projected vec & rotated vec
-  float pitch2 = Angle(rX_xz, rX) * Sign(rX.y);
-
-  m = mat4::Rotate(yaw2, yAxis);
-  vec3 zYaw = vec4To3(m * zAxis);
-  // roll = angle between zYaw & rZ
-  float roll2 = Angle(zYaw, rZ) * Sign(rZ.y) * -1;
-
-  return {yaw2, pitch2, roll2};
-}
-
-float Sign(float f) {
-  return f < 0 ? -1. : 1.;
-}
-
-float Angle(vec3 a, vec3 b) {
-  if (Math::Abs(a.x - b.x) <= epsilon
-    && Math::Abs(a.y - b.y) <= epsilon
-    && Math::Abs(a.z - b.z) <= epsilon
-  )
-    return 0;
-  return Math::Acos(
-    Math::Dot(a, b) / (a.Length() * b.Length())
-  );
 }
