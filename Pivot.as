@@ -93,7 +93,7 @@ class Pivot {
       // real center to determine rendering order with the
       // coordinate system
       vec3(-0.5, 0.5, 0.5),
-      vec3(pivotPosition)
+      vec3(pivotPosition) / vec3(32, -8, -32)
     };
     // use handles to fill in the vectors into the original arrays
     vec3[]@[] arrs = {@cardinalDirs, @corners, @extraPoints};

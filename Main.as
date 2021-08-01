@@ -7,6 +7,7 @@ float cursorRoll = 0;
 bool localCoords = false;
 NudgeMode nudgeMode = NudgeMode::Position;
 PositionNudgeMode positionNudgeMode = PositionNudgeMode::GridSizeMultiple;
+vec3 pivotPosition = vec3(0, 0, 0);
 
 float BiSlopeAngle = Math::ToDeg(Math::Atan(8.0f / 32.0f));
 float Slope2Angle = Math::ToDeg(Math::Atan(16.0f / 32.0f));
@@ -22,7 +23,8 @@ vec2 backgroundSize = vec2();
 
 enum NudgeMode {
   Position,
-  Rotation
+  Rotation,
+  Pivot
 }
 
 enum PositionNudgeMode {
@@ -114,7 +116,7 @@ void Render() {
       cursorPitch,
       cursorRoll,
       renderCoordinateSystem,
-      vec3(0, 0, 0),
+      pivotPosition,
       getTileSize(pivotRenderer.size)
     );
   }
@@ -290,7 +292,10 @@ void RenderInterface() {
       UI::WindowFlags::NoResize
     );
     UI::SetWindowSize(
-      vec2(370, 590 + (fixCursorPosition ? 75 : 0)),
+      vec2(
+        370,
+        620 + (fixCursorPosition ? 75 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
+      ),
       UI::Cond::Always
     );
     
@@ -312,39 +317,60 @@ void RenderInterface() {
 
     UI::Separator();
 
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Rotation) {
+      // ====================================== Fixed position
+      UI::Text("Fixed position:");
+      UI::Columns(3, "2", false);
 
-    UI::Text("Fixed position:");
-    UI::Columns(3, "2", false);
+      UI::Text("X");
+      if (fixCursorPosition) {
+        cursorPosition.x = UI::InputFloat("X", cursorPosition.x, 0);
+      } else {
+        UI::Text(Text::Format("%f", cursorPosition.x));
+      }
+      if (nudgeMode == NudgeMode::Position)
+        UI::Text("Nudge with\n\\$f90J\\$z & \\$f90L\\$z");
+      UI::NextColumn();
 
-    UI::Text("X");
-    if (fixCursorPosition) {
-      cursorPosition.x = UI::InputFloat("X", cursorPosition.x, 0.);
-    } else {
-      UI::Text(Text::Format("%f", cursorPosition.x));
-    }
-    if (nudgeMode == NudgeMode::Position)
+      UI::Text("Y");
+      if (fixCursorPosition) {
+        cursorPosition.y = UI::InputFloat("Y", cursorPosition.y, 0);
+      } else {
+        UI::Text(Text::Format("%f", cursorPosition.y));
+      }
+      if (nudgeMode == NudgeMode::Position)
+        UI::Text("Nudge with\n\\$f90B\\$z & \\$f90N\\$z");
+      UI::NextColumn();
+
+      UI::Text("Z");
+      if (fixCursorPosition) {
+        cursorPosition.z = UI::InputFloat("Z", cursorPosition.z, 0);
+      } else {
+        UI::Text(Text::Format("%f", cursorPosition.z));
+      }
+      if (nudgeMode == NudgeMode::Position)
+        UI::Text("Nudge with\n\\$f90I\\$z & \\$f90K\\$z");
+      UI::Columns(1, "3", false);
+    } else if (nudgeMode == NudgeMode::Pivot) {
+      // ====================================== Pivot position
+      UI::Text("Pivot position:");
+      UI::Columns(3, "2", false);
+
+      UI::Text("X");
+      pivotPosition.x = UI::InputFloat("X", pivotPosition.x, 0);
       UI::Text("Nudge with\n\\$f90J\\$z & \\$f90L\\$z");
-    UI::NextColumn();
+      UI::NextColumn();
 
-    UI::Text("Y");
-    if (fixCursorPosition) {
-      cursorPosition.y = UI::InputFloat("Y", cursorPosition.y, 0);
-    } else {
-      UI::Text(Text::Format("%f", cursorPosition.y));
-    }
-    if (nudgeMode == NudgeMode::Position)
+      UI::Text("Y");
+      pivotPosition.y = UI::InputFloat("Y", pivotPosition.y, 0);
       UI::Text("Nudge with\n\\$f90B\\$z & \\$f90N\\$z");
-    UI::NextColumn();
+      UI::NextColumn();
 
-    UI::Text("Z");
-    if (fixCursorPosition) {
-      cursorPosition.z = UI::InputFloat("Z", cursorPosition.z, 0);
-    } else {
-      UI::Text(Text::Format("%f", cursorPosition.z));
-    }
-    if (nudgeMode == NudgeMode::Position)
+      UI::Text("Z");
+      pivotPosition.z = UI::InputFloat("Z", pivotPosition.z, 0);
       UI::Text("Nudge with\n\\$f90I\\$z & \\$f90K\\$z");
-    UI::Columns(1, "3", false);
+      UI::Columns(1, "3", false);
+    }
 
 
     UI::Separator();
@@ -416,19 +442,26 @@ void RenderInterface() {
 
     UI::Text("Nudge ");
     UI::SameLine();
+    bool checked;
     if (UI::Checkbox("Position", nudgeMode == NudgeMode::Position)) {
       nudgeMode = NudgeMode::Position;
-    } else {
+    } else if (nudgeMode == NudgeMode::Position) {
       nudgeMode = NudgeMode::Rotation;
     }
     UI::SameLine();
     if (UI::Checkbox("Rotation", nudgeMode == NudgeMode::Rotation)) {
       nudgeMode = NudgeMode::Rotation;
-    } else {
+    } else if (nudgeMode == NudgeMode::Rotation) {
       nudgeMode = NudgeMode::Position;
     }
     UI::SameLine();
     UI::TextDisabled("(Toggle with G)");
+
+    if (UI::Checkbox("Nudge pivot position", nudgeMode == NudgeMode::Pivot)) {
+      nudgeMode = NudgeMode::Pivot;
+    } else if (nudgeMode == NudgeMode::Pivot) {
+      nudgeMode = NudgeMode::Rotation;
+    }
 
     localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
     UI::SameLine();
@@ -528,7 +561,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
   RotationAxis axis;
   float rotationDelta = 0;
   if (key == VirtualKey::J) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.x -= settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
@@ -536,7 +569,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Roll;
     }
   } else if (key == VirtualKey::L) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.x += settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
@@ -544,7 +577,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Roll;
     }
   } else if (key == VirtualKey::I) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.z += settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
@@ -552,7 +585,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Pitch;
     }
   } else if (key == VirtualKey::K) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.z -= settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
     } else {
@@ -560,7 +593,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Pitch;
     }
   } else if (key == VirtualKey::B) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.y -= settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
     } else {
@@ -568,7 +601,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Yaw;
     }
   } else if (key == VirtualKey::N) {
-    if (nudgeMode == NudgeMode::Position) {
+    if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       move.y += settingStepSizePosition 
         * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
     } else {
@@ -576,9 +609,11 @@ bool OnKeyPress(bool down, VirtualKey key) {
       axis = RotationAxis::Yaw;
     }
   } else if (key == VirtualKey::G) {
-    nudgeMode = nudgeMode == NudgeMode::Position
-      ? NudgeMode::Rotation
-      : NudgeMode::Position;
+    nudgeMode = 
+      nudgeMode == NudgeMode::Position
+      || nudgeMode == NudgeMode::Pivot
+        ? NudgeMode::Rotation
+        : NudgeMode::Position;
     handled = true;
   } else if (key == VirtualKey::T) {
     refreshVariables = !refreshVariables;
@@ -588,12 +623,22 @@ bool OnKeyPress(bool down, VirtualKey key) {
   }
 
   if (move.Length() > 0) {
-    if (localCoords) {
-      move = rotateVec3(move, cursorYaw, cursorPitch, cursorRoll);
+    if (nudgeMode == NudgeMode::Pivot) {
+      pivotPosition += move;
+    } else {
+      if (localCoords) {
+        move = rotateVec3(move, cursorYaw, cursorPitch, cursorRoll);
+      }
+      cursorPosition += move;
     }
-    cursorPosition += move;
     handled = true;
   } else if (rotationDelta > 0 || rotationDelta < 0) {
+    cursorPosition += rotateVec3(
+      pivotPosition,
+      cursorYaw,
+      cursorPitch,
+      cursorRoll
+    );
     float[] res = rotateRotations(
       cursorYaw,
       cursorPitch,
@@ -605,6 +650,12 @@ bool OnKeyPress(bool down, VirtualKey key) {
     cursorYaw = res[0];
     cursorPitch = res[1];
     cursorRoll = res[2];
+    cursorPosition -= rotateVec3(
+      pivotPosition,
+      cursorYaw,
+      cursorPitch,
+      cursorRoll
+    );
     handled = true;
   }
   return handled;
