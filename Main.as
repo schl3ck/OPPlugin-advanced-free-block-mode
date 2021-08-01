@@ -8,12 +8,12 @@ bool localCoords = false;
 NudgeMode nudgeMode = NudgeMode::Position;
 PositionNudgeMode positionNudgeMode = PositionNudgeMode::GridSizeMultiple;
 vec3 pivotPosition = vec3(0, 0, 0);
+bool focusOnPivot = false;
 
 float BiSlopeAngle = Math::ToDeg(Math::Atan(8.0f / 32.0f));
 float Slope2Angle = Math::ToDeg(Math::Atan(16.0f / 32.0f));
 
 // machine precision of floats. is probably smaller but this should suffice
-// when I make it smaller then there are sometimes problems in the function Angle
 float epsilon = 0.0001;
 
 Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
@@ -86,6 +86,10 @@ void Main() {
       // seems like pitch & roll is swapped in the snapped pos
       cursorPitch = editor.Cursor.SnappedLocInMap_Roll;
       cursorRoll = editor.Cursor.SnappedLocInMap_Pitch;
+    }
+
+    if (focusOnPivot) {
+      FocusCameraOnPivot();
     }
 
     sleep(10);
@@ -294,7 +298,7 @@ void RenderInterface() {
     UI::SetWindowSize(
       vec2(
         370,
-        620 + (fixCursorPosition ? 75 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
+        650 + (fixCursorPosition ? 75 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
       ),
       UI::Cond::Always
     );
@@ -433,9 +437,6 @@ void RenderInterface() {
 
     bool oldFixCursorPos = fixCursorPosition;
     fixCursorPosition = UI::Checkbox("Fix cursor position", fixCursorPosition);
-    if (fixCursorPosition) {
-      refreshVariables = false;
-    }
     if (oldFixCursorPos != fixCursorPosition && !fixCursorPosition) {
       cursor.UseSnappedLoc = false;
     }
@@ -459,6 +460,7 @@ void RenderInterface() {
 
     if (UI::Checkbox("Nudge pivot position", nudgeMode == NudgeMode::Pivot)) {
       nudgeMode = NudgeMode::Pivot;
+      localCoords = true;
     } else if (nudgeMode == NudgeMode::Pivot) {
       nudgeMode = NudgeMode::Rotation;
     }
@@ -467,12 +469,24 @@ void RenderInterface() {
     UI::SameLine();
     UI::TextDisabled("(Toggle with O)");
 
+    if (fixCursorPosition) {
+      refreshVariables = false;
+    }
     refreshVariables = UI::Checkbox(
       "Refresh position & rotation variables",
       refreshVariables
     );
     UI::SameLine();
     UI::TextDisabled("(Toggle with T)");
+
+    if (!fixCursorPosition) {
+      focusOnPivot = false;
+    }
+    focusOnPivot = UI::Checkbox("Focus camera on pivot", focusOnPivot);
+    UI::SameLine();
+    if(UI::Button("Focus once")) {
+      FocusCameraOnPivot();
+    }
 
     editor.HideBlockHelpers = UI::Checkbox(
       "Hide block helpers",
@@ -556,7 +570,6 @@ bool OnKeyPress(bool down, VirtualKey key) {
 
   bool handled = false;
   vec3 move = vec3();
-  CGameCursorBlock@ cursor = editor.Cursor;
   float stepSizeRad = Math::ToRad(settingStepSizeRotation);
   RotationAxis axis;
   float rotationDelta = 0;
@@ -659,4 +672,21 @@ bool OnKeyPress(bool down, VirtualKey key) {
     handled = true;
   }
   return handled;
+}
+
+void FocusCameraOnPivot() {
+  CGameCtnEditorFree@ editor = GetMapEditor();
+  if (editor is null) return;
+  CGameControlCameraEditorOrbital@ camera = editor.OrbitalCameraControl;
+  vec3 pivotOffset = rotateVec3(
+      pivotPosition,
+      cursorYaw,
+      cursorPitch,
+      cursorRoll
+    );
+  vec3 diff = cursorPosition + pivotOffset - camera.m_TargetedPosition;
+  if (!VectorsEqual(diff, vec3(0, 0, 0))) {
+    camera.m_TargetedPosition += diff;
+    camera.Pos += diff;
+  }
 }

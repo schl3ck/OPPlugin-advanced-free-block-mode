@@ -155,7 +155,7 @@ class Pivot {
       {zero + y, z}
     };
 
-    DrawPivot(startPos);
+    // DrawPivot(startPos);
 
     nvg::StrokeColor(vec4(0, 0, 0, 0.2));
     for (uint i = 0; i < edges.Length; i++) {
