@@ -458,7 +458,7 @@ void RenderInterface() {
     UI::SameLine();
     UI::TextDisabled("(Toggle with G)");
 
-    if (UI::Checkbox("Nudge pivot position", nudgeMode == NudgeMode::Pivot)) {
+    if (UI::Checkbox("Nudge pivot point", nudgeMode == NudgeMode::Pivot)) {
       nudgeMode = NudgeMode::Pivot;
       localCoords = true;
     } else if (nudgeMode == NudgeMode::Pivot) {
