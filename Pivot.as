@@ -71,8 +71,9 @@ class Pivot {
 
     // assume there is only one block size
     vec3 blockSize = vec3(sizes[0].x, sizes[0].y, sizes[0].z);
+    float maxBlockSize = Math::Max(blockSize.x, Math::Max(blockSize.y, blockSize.z));
     // normalize to 1
-    blockSize /= Math::Max(blockSize.x, Math::Max(blockSize.y, blockSize.z));
+    blockSize /= maxBlockSize;
 
     // rotate the axes
     vec3[] cardinalDirs = {
@@ -93,7 +94,7 @@ class Pivot {
       // real center to determine rendering order with the
       // coordinate system
       vec3(-0.5, 0.5, 0.5),
-      vec3(pivotPosition) / vec3(32, -8, -32)
+      vec3(pivotPosition) / (vec3(32, -8, -32) * maxBlockSize)
     };
     // use handles to fill in the vectors into the original arrays
     vec3[]@[] arrs = {@cardinalDirs, @corners, @extraPoints};
@@ -155,7 +156,9 @@ class Pivot {
       {zero + y, z}
     };
 
-    // DrawPivot(startPos);
+    if (settingPivotRelativePosition != PivotRendererPosition::Center) {
+      DrawPivot(startPos);
+    }
 
     nvg::StrokeColor(vec4(0, 0, 0, 0.2));
     for (uint i = 0; i < edges.Length; i++) {

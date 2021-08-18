@@ -48,6 +48,7 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 Draw point on screen when fixing camera to pivot position
 Add button to reset pivot position
 Display pivot position in interface
+Fix incorrect display of block frame relative to the pivot position
 
 ## v1.1 - 2021-08-01
 Add adbility to move the pivot point for rotations
