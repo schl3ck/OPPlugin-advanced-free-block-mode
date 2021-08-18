@@ -20,6 +20,7 @@ Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
 CoordinateSystem@ coordinateSystem = CoordinateSystem();
 Pivot@ pivotRenderer = Pivot();
 vec2 backgroundSize = vec2();
+bool DrawAPIRemoved = false;
 
 enum NudgeMode {
   Position,
@@ -126,6 +127,20 @@ void Render() {
   }
 
   renderCoordinateSystem(false);
+
+  if (focusOnPivot && !DrawAPIRemoved && editor.Cursor.UseFreePos) {
+    try {
+      nvg::BeginPath();
+      nvg::Circle(vec2(Draw::GetWidth(), Draw::GetHeight()) / 2, 3);
+      nvg::FillColor(vec4(0, 0, 1, 1));
+      nvg::Fill();
+      nvg::StrokeWidth(2);
+      nvg::StrokeColor(vec4(1, 0, 0, 1));
+      nvg::Stroke();
+    } catch {
+      DrawAPIRemoved = true;
+    }
+  }
 }
 void renderCoordinateSystem(bool fromPivotRenderer) {
   if (!settingShowCoordinateSystem) return;

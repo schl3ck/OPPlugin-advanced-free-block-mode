@@ -44,6 +44,9 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 * Maybe render a point on the screen showing the current pivot point in the map. Couldn't get that to work properly yet
 
 # Changelog
+## v1.1.1 - 2021-
+Draw point on screen when fixing camera to pivot position
+
 ## v1.1 - 2021-08-01
 Add adbility to move the pivot point for rotations
 
