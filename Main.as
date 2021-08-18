@@ -479,6 +479,14 @@ void RenderInterface() {
     } else if (nudgeMode == NudgeMode::Pivot) {
       nudgeMode = NudgeMode::Rotation;
     }
+    if (!VectorsEqual(pivotPosition, vec3(0, 0, 0))) {
+      UI::SameLine();
+      if (UI::Button("Reset")) {
+        pivotPosition = vec3(0, 0, 0);
+      }
+      UI::SameLine();
+      UI::TextDisabled(vecToString(pivotPosition, 3));
+    }
 
     localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
     UI::SameLine();

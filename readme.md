@@ -46,6 +46,8 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 # Changelog
 ## v1.1.1 - 2021-
 Draw point on screen when fixing camera to pivot position
+Add button to reset pivot position
+Display pivot position in interface
 
 ## v1.1 - 2021-08-01
 Add adbility to move the pivot point for rotations

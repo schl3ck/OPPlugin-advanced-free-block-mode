@@ -54,19 +54,27 @@ bool VectorsEqual(vec3 a, vec3 b) {
 }
 
 
-string vecToString(vec2 vec) {
+string vecToString(vec2 vec, int precision = -1) {
+  string format = "%f";
+  if (precision > -1) {
+    format = "%." + precision + "f";
+  }
   return "[" 
-    + Text::Format("%f", vec.x)
+    + Text::Format(format, vec.x)
     + ", "
-    + Text::Format("%f", vec.y)
+    + Text::Format(format, vec.y)
     + "]";
 }
-string vecToString(vec3 vec) {
+string vecToString(vec3 vec, int precision = -1) {
+  string format = "%f";
+  if (precision > -1) {
+    format = "%." + precision + "f";
+  }
   return "[" 
-    + Text::Format("%f", vec.x)
+    + Text::Format(format, vec.x)
     + ", "
-    + Text::Format("%f", vec.y)
+    + Text::Format(format, vec.y)
     + ", "
-    + Text::Format("%f", vec.z)
+    + Text::Format(format, vec.z)
     + "]";
 }
