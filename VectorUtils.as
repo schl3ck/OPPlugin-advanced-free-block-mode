@@ -59,22 +59,22 @@ string vecToString(vec2 vec, int precision = -1) {
   if (precision > -1) {
     format = "%." + precision + "f";
   }
-  return "[" 
+  return "<" 
     + Text::Format(format, vec.x)
     + ", "
     + Text::Format(format, vec.y)
-    + "]";
+    + ">";
 }
 string vecToString(vec3 vec, int precision = -1) {
   string format = "%f";
   if (precision > -1) {
     format = "%." + precision + "f";
   }
-  return "[" 
+  return "<" 
     + Text::Format(format, vec.x)
     + ", "
     + Text::Format(format, vec.y)
     + ", "
     + Text::Format(format, vec.z)
-    + "]";
+    + ">";
 }

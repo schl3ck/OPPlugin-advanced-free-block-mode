@@ -312,7 +312,7 @@ void RenderInterface() {
     );
     UI::SetWindowSize(
       vec2(
-        370,
+        390,
         650 + (fixCursorPosition ? 90 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
       ),
       UI::Cond::Always
