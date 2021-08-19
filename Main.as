@@ -313,7 +313,7 @@ void RenderInterface() {
     UI::SetWindowSize(
       vec2(
         370,
-        650 + (fixCursorPosition ? 75 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
+        650 + (fixCursorPosition ? 90 : nudgeMode == NudgeMode::Pivot ? 5 : 0)
       ),
       UI::Cond::Always
     );
@@ -576,7 +576,9 @@ void RenderInterface() {
     if (fixCursorPosition) {
       UI::NewLine();
       UI::Text(
-        "Place the block by clicking anywhere after waiting for\nit to be in the correct position"
+        "Place the block by clicking anywhere after waiting for\n"
+        + "it to be in the correct position if it flickers between the\n"
+        + "fixed position and your mouse cursor"
       );
     }
 
