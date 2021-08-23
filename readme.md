@@ -24,9 +24,9 @@ A utility tool to place blocks pixel perfect in the free block mode.
 4. While your mouse cursor is in the position where the blocks snapped together, press `T` to save the coordinates of the snapped block
 5. Choose the block you want to place
 6. Tick the box _Fix cursor position_. Your chosen block appears where the previous block snapped to the already placed block.
-    * You can now nudge the block via the keys `I`, `K`, `J`, `L`, `B`, `N`
-    * Toggle between moving the block and rotating it with `G`. Rotating uses the same keys
-    * Switch between global and local axes with `O`
+    * You can now nudge the block via the keys `Left`, `Right`, `Up`, `Down`, `I`, `K`
+    * Toggle between moving the block and rotating it with `L`. Rotating uses the same keys
+    * Switch between global and local axes with `J`
     * Move the pivot point by selecting the checkbox _Nudge pivot point_. This moves the point around which the block is rotated
 7. Place the block by clicking anywhere into the editor (like you place a block normally)
 8. Disable _Fix cursor position_
@@ -44,7 +44,10 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 * Maybe render a point on the screen showing the current pivot point in the map. Couldn't get that to work properly yet
 
 # Changelog
-## v1.1.1 - 2021-
+## v1.2 - 2021-
+Add new nudge mode where the axis is selected depeding on the current camera yaw angle
+Add ability to remap the keys
+Changed default keybinding
 Draw point on screen when fixing camera to pivot position
 Add button to reset pivot position
 Display pivot position in interface

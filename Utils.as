@@ -8,14 +8,9 @@ float[] rotateRotations(
   float pitch,
   float roll,
   float delta,
-  RotationAxis axis,
+  vec3 axis,
   bool local
 ) {
-  // roll is local by definition
-  if (local && axis == RotationAxis::Roll) return {yaw, pitch, roll + delta};
-  // yaw is global by definition
-  if (!local && axis == RotationAxis::Yaw) return {yaw + delta, pitch, roll};
-
   // base axes
   vec3 xAxis = vec3(1, 0, 0);
   vec3 yAxis = vec3(0, 1, 0);
@@ -26,17 +21,8 @@ float[] rotateRotations(
   vec3 y = rotateVec3(yAxis, yaw, pitch, roll);
   vec3 z = rotateVec3(zAxis, yaw, pitch, roll);
 
-  vec3 ax;
-  if (local) {
-    if (axis == RotationAxis::Yaw) ax = y;
-    else if (axis == RotationAxis::Pitch) ax = z;
-  } else {
-    if (axis == RotationAxis::Pitch) ax = zAxis;
-    else if (axis == RotationAxis::Roll) ax = xAxis;
-  }
-
   // axes in wanted rotation
-  mat4 m = mat4::Rotate(delta, ax);
+  mat4 m = mat4::Rotate(delta, axis);
   vec3 rX = vecRemoveLastD(m * x);
   vec3 rY = vecRemoveLastD(m * y);
   vec3 rZ = vecRemoveLastD(m * z);
@@ -62,4 +48,13 @@ float Sign(float f) {
 
 string fmt(float f) {
   return Text::Format("%f", f);
+}
+
+string virtualKeyToString(VirtualKey key) {
+  string[] parts = tostring(key).Split("::");
+  string s = parts[parts.Length - 1];
+  if (KeyToIconMap.Exists(s)) {
+    s = string(KeyToIconMap[s]);
+  }
+  return s;
 }

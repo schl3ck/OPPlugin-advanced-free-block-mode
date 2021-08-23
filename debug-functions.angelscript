@@ -12,12 +12,31 @@ bool OnMouseButton(bool down, int button, int x, int y) {
   return false;
 }
 
-string[] floatArrToStrArr(float[] arr) {
-  string[] res;
-  for (uint i = 0; i < arr.Length; i++) {
-    res.InsertLast("" + arr[i]); // Text::Format("%f", arr[i])
+float ArrayMax(float[]& ar) {
+  if (ar is null) return 0;
+  if (ar.Length == 0) return 0;
+  float max = 0x8000f;
+  for (uint i = 1; i < ar.Length; i++) {
+    max = Math::Max(max, ar[i]);
   }
-  return res;
+  return max;
+}
+
+string ArrayToString(float[]& ar) {
+  int maxLen = 80;
+  string[] strs;
+  // "{ " + " }" = length of 4
+  int len = 4;
+  for (uint i = 0; i < ar.Length; i++) {
+    strs.InsertLast(tostring(ar[i]));
+    len += strs[i].Length;
+  }
+  bool linebreaks = len > maxLen;
+  string s = "{";
+  for (uint i = 0; i < strs.Length; i++) {
+    s += (i > 0 ? "," : "") + (linebreaks ? "\n  " : " ") + strs[i];
+  }
+  return s + (linebreaks ? "\n" : " ") + "}";
 }
 
 void printMatrix(mat3 m, string text = "") {
