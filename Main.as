@@ -4,6 +4,8 @@ vec3 cursorPosition = vec3();
 float cursorYaw = 0;
 float cursorPitch = 0;
 float cursorRoll = 0;
+float blockPitch = 0;
+float blockRoll = 0;
 bool localCoords = false;
 NudgeMode nudgeMode = NudgeMode::Position;
 PositionNudgeMode positionNudgeMode = PositionNudgeMode::GridSizeMultiple;
@@ -95,12 +97,20 @@ void Main() {
       // pitch rotates around the block x axis
       // regardless of the angle, roll should turn around a block axis but
       // doesn't => should be swapped!
+
+      // fix normal block rotations to enable using the arrow keys
+      editor.Cursor.Pitch = blockPitch;
+      editor.Cursor.Roll = blockRoll;
     } else if (refreshVariables) {
       cursorPosition = editor.Cursor.SnappedLocInMap_Trans;
       cursorYaw = editor.Cursor.SnappedLocInMap_Yaw;
       // seems like pitch & roll is swapped in the snapped pos
       cursorPitch = editor.Cursor.SnappedLocInMap_Roll;
       cursorRoll = editor.Cursor.SnappedLocInMap_Pitch;
+
+      // fix normal block rotations to enable using the arrow keys
+      blockPitch = editor.Cursor.Pitch;
+      blockRoll = editor.Cursor.Roll;
     }
 
     if (focusOnPivot) {
@@ -404,6 +414,10 @@ void RenderInterface() {
         }
       }
       keysForNudgeDirs.InsertLast(vectorToKey(nudgeDirs[i]));
+    }
+
+    if (!fixCursorPosition && nudgeMode == NudgeMode::Pivot) {
+      nudgeMode = NudgeMode::Position;
     }
 
     if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Rotation) {
@@ -837,6 +851,17 @@ bool OnKeyPress(bool down, VirtualKey key) {
     localCoords = !localCoords;
   } else if (key == settingKeyToggleFixedCursor) {
     fixCursorPosition = !fixCursorPosition;
+  }
+
+  if (fixCursorPosition) {
+    // undo movement of page up & down keys
+    if (key == VirtualKey::Prior) {
+      editor.OrbitalCameraControl.m_TargetedPosition.y -= 1;
+      editor.OrbitalCameraControl.Pos.y -= 1;
+    } else if (key == VirtualKey::Next) {
+      editor.OrbitalCameraControl.m_TargetedPosition.y += 1;
+      editor.OrbitalCameraControl.Pos.y += 1;
+    }
   }
 
   if (move.Length() > 0) {
