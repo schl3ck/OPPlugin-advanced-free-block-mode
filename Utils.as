@@ -60,11 +60,6 @@ float Sign(float f) {
   return f < 0 ? -1. : 1.;
 }
 
-float Angle(vec3 a, vec3 b) {
-  float res = Math::Dot(a, b) / (a.Length() * b.Length());
-  return Math::Acos(Math::Clamp(res, -1., 1.));
-}
-
 string fmt(float f) {
   return Text::Format("%f", f);
 }

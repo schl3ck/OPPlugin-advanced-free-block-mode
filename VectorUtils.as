@@ -6,6 +6,11 @@ vec2 vecRemoveLastD(vec3 v) {
   return vec2(v.x, v.y);
 }
 
+float Angle(vec3 a, vec3 b) {
+  float res = Math::Dot(a, b) / (a.Length() * b.Length());
+  return Math::Acos(Math::Clamp(res, -1., 1.));
+}
+
 vec3 rotateVec3(vec3 v, float yaw, float pitch, float roll) {
   mat4 Ry = mat4::Rotate(yaw, vec3(0, 1, 0));
   mat4 Rz = mat4::Rotate(pitch, vec3(0, 0, 1));
