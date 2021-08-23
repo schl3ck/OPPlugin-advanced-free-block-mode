@@ -46,9 +46,9 @@ VirtualKey settingKeyLeft = VirtualKey::Left;
 [Setting name="Right key" category="Keymap" description="Moves the block in the horizontal plane"]
 VirtualKey settingKeyRight = VirtualKey::Right;
 [Setting name="Up key" category="Keymap" description="Moves the block on the vertical axis"]
-VirtualKey settingKeyUp = VirtualKey::I;
+VirtualKey settingKeyUp = VirtualKey::Prior;
 [Setting name="Down key" category="Keymap" description="Moves the block on the vertical axis"]
-VirtualKey settingKeyDown = VirtualKey::K;
+VirtualKey settingKeyDown = VirtualKey::Next;
 [Setting name="Toggle fixed cursor state" category="Keymap"]
 VirtualKey settingKeyToggleFixedCursor = VirtualKey::N;
 [Setting name="Toggle nudge mode" category="Keymap"]
