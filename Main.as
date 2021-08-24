@@ -654,8 +654,7 @@ void RenderInterface() {
       );
     }
 
-    UI::Text("Nudge ");
-    UI::SameLine();
+    printUITextOnButtonBaseline("Nudge ");
     bool checked;
     if (UI::Checkbox("Position", nudgeMode == NudgeMode::Position)) {
       nudgeMode = NudgeMode::Position;

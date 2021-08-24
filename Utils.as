@@ -84,3 +84,12 @@ string replaceIcons(string text) {
   }
   return res;
 }
+
+void printUITextOnButtonBaseline(string text) {
+  vec2 cursorPos = UI::GetCursorPos();
+  UI::SetCursorPos(cursorPos + vec2(0, 4));
+  UI::Text(text);
+  UI::SameLine();
+  cursorPos = UI::GetCursorPos();
+  UI::SetCursorPos(cursorPos - vec2(0, 4));
+}
