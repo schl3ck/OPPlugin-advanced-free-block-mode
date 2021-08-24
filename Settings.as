@@ -31,11 +31,14 @@ float settingStepSizePosition = 1.0;
 [Setting name="Step size for rotation" category="Main"]
 float settingStepSizeRotation = 15.0;
 
-[Setting name="Nudge mode for moving the block" category="Main" description="This specifies which axis corresponds to which key. E.g. for the key Left: Fixed = X axis, RelativeToCamera = block moves left from your perspective, SelectedAxis = block moves along the selected axis."]
+[Setting name="Nudge mode for moving the block" category="Main" description="Specifies which axis corresponds to which key. E.g. for the key Left: Fixed = X axis, RelativeToCamera = block moves left from your perspective, SelectedAxis = block moves along the selected axis."]
 SettingsNudgeMode settingNudgeModeTranslation = SettingsNudgeMode::Fixed;
 
-[Setting name="Nudge mode for rotating the block" category="Main" description="This specifies which axis corresponds to which key. E.g. for the key Left: Fixed = rotates around X axis, RelativeToCamera = block rolls left from your perspective, SelectedAxis = block rotates along the selected axis. NOTE: Sometimes in RelativeToCamera mode, especially on a 45° angle, the axis of rotation may switch while using the same key."]
+[Setting name="Nudge mode for rotating the block" category="Main" description="Specifies which axis corresponds to which key. E.g. for the key Left: Fixed = rotates around X axis, RelativeToCamera = block rolls left from your perspective, SelectedAxis = block rotates along the selected axis. NOTE: Sometimes in RelativeToCamera mode, especially on a 45° angle, the axis of rotation may switch while using the same key."]
 SettingsNudgeMode settingNudgeModeRotation = SettingsNudgeMode::Fixed;
+
+[Setting name="Show help for nudge modes" category="Main"]
+bool settingShowHelpForNudgeModes = false;
 
 [Setting name="Forward key" category="Keymap" description="Moves the block in the horizontal plane"]
 VirtualKey settingKeyForward = VirtualKey::Up;

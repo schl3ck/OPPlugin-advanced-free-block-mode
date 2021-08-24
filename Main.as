@@ -28,6 +28,8 @@ VirtualKey nullKey = VirtualKey(0);
 NudgingFixedAxisPerKey@ nudgingFixedAxisPerKey = NudgingFixedAxisPerKey();
 NudgingRelativeToCam@ nudgingRelativeToCam = NudgingRelativeToCam();
 
+string nudgeModeHelpText;
+
 enum NudgeMode {
   Position,
   Rotation,
@@ -77,6 +79,8 @@ void Main() {
       return;
   }
   settingFirstUse = false;
+
+  nudgeModeHelpText = replaceIcons(readPluginFile("nudgeModeHelp.md"));
 
   while (true) {
     CGameCtnEditorFree@ editor = GetMapEditor();
@@ -322,6 +326,18 @@ void RenderInterface() {
 
     // UI::Text("V " + Camera.m_CurrentVAngle); // pitch
     // UI::Text("H " + Camera.m_CurrentHAngle); // yaw
+
+    UI::End();
+  }
+
+  if (settingShowHelpForNudgeModes) {
+    UI::Begin(
+      "\\$f90" + Icons::Gavel + "\\$z Nudge mode help",
+      settingShowHelpForNudgeModes
+    );
+    UI::SetWindowSize(vec2(300, 500), UI::Cond::Appearing);
+
+    UI::Markdown(nudgeModeHelpText);
 
     UI::End();
   }

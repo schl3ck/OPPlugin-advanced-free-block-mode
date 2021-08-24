@@ -58,3 +58,29 @@ string virtualKeyToString(VirtualKey key) {
   }
   return s;
 }
+
+string readPluginFile(string filename) {
+  IO::FileSource f(filename);
+  return f.ReadToEnd();
+}
+
+string replaceIcons(string text) {
+  string[] iconNames = {
+    "LongArrowLeft",
+    "LongArrowRight",
+    "LongArrowUp",
+    "LongArrowDown"
+  };
+  string[] icons = {
+    Icons::LongArrowLeft,
+    Icons::LongArrowRight,
+    Icons::LongArrowUp,
+    Icons::LongArrowDown
+  };
+
+  string res = text;
+  for (uint i = 0; i < iconNames.Length; i++) {
+    res = Regex::Replace(res, "Icons::" + iconNames[i], icons[i]);
+  }
+  return res;
+}
