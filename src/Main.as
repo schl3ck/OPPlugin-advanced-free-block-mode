@@ -22,7 +22,6 @@ Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
 CoordinateSystem@ coordinateSystem = CoordinateSystem();
 Pivot@ pivotRenderer = Pivot();
 vec2 backgroundSize = vec2();
-bool DrawAPIRemoved = false;
 
 Keybindings@ keybindings = Keybindings();
 VirtualKey nullKey = VirtualKey(0);
@@ -162,8 +161,7 @@ void Render() {
 
   renderCoordinateSystem(false);
 
-  if (focusOnPivot && !DrawAPIRemoved && editor.Cursor.UseFreePos) {
-    try {
+  if (focusOnPivot && editor.Cursor.UseFreePos) {
       nvg::BeginPath();
       nvg::Circle(vec2(Draw::GetWidth(), Draw::GetHeight()) / 2, 3);
       nvg::FillColor(vec4(0, 0, 1, 1));
@@ -171,9 +169,6 @@ void Render() {
       nvg::StrokeWidth(2);
       nvg::StrokeColor(vec4(1, 0, 0, 1));
       nvg::Stroke();
-    } catch {
-      DrawAPIRemoved = true;
-    }
   }
 }
 void renderCoordinateSystem(bool fromPivotRenderer) {
