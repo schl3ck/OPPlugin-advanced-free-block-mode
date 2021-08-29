@@ -28,6 +28,7 @@ Keybindings@ keybindings = Keybindings();
 VirtualKey nullKey = VirtualKey(0);
 NudgingFixedAxisPerKey@ nudgingFixedAxisPerKey = NudgingFixedAxisPerKey();
 NudgingRelativeToCam@ nudgingRelativeToCam = NudgingRelativeToCam();
+uint64 notifyNudgeKeyChange = 0;
 
 string nudgeModeHelpText;
 SettingKeyInfo@ settingKeyInfoWaitingForKey;
@@ -586,7 +587,7 @@ void RenderInterface() {
 
     UI::Separator();
 
-
+    vec2 rotationSectionStartPos = UI::GetCursorPos();
     UI::Text("Fixed rotation:");
     UI::SameLine();
     if(UI::Selectable(
@@ -671,6 +672,25 @@ void RenderInterface() {
       cursorYaw = Math::ToRad(cursorYaw);
       cursorPitch = Math::ToRad(cursorPitch);
       cursorRoll = Math::ToRad(cursorRoll);
+    }
+
+    vec2 rotationSectionEndPos = UI::GetCursorPos();
+    float diff = Time::get_Now() - notifyNudgeKeyChange;
+    if (diff < 2000) {
+      UI::BeginTooltip();
+      UI::Text("The nudge direction of the last pressed key has changed!");
+      UI::EndTooltip();
+
+      if (diff % 1000 < 500) {
+        UI::DrawList@ drawList = UI::GetBackgroundDrawList();
+        float width = UI::GetWindowSize().x;
+        float height = rotationSectionEndPos.y - rotationSectionStartPos.y;
+        vec2 winPos = UI::GetWindowPos()
+          + rotationSectionStartPos
+          - vec2(0, UI::GetScrollY())
+          - vec2(8, 3);
+        drawList.AddRectFilled(vec4(winPos.x, winPos.y, width, height), vec4(1, 0, 0, 1));
+      }
     }
 
     UI::Separator();
@@ -951,6 +971,12 @@ bool OnKeyPress(bool down, VirtualKey key) {
       cursorPitch,
       cursorRoll
     );
+    // check if key has changed
+    vec3 newNudgeDir = keyToVector(key);
+    if (!VectorsEqual(nudgeDir, newNudgeDir)) {
+      notifyNudgeKeyChange = Time::get_Now();
+    }
+    
     handled = true;
   }
   return handled;
