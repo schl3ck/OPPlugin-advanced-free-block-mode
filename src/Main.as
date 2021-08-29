@@ -740,11 +740,11 @@ void RenderInterface() {
     }
 
     localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
-    if (Keybindings::GetKey("ToggleRelativNudging") != nullKey) {
+    if (Keybindings::GetKey("ToggleRelativeNudging") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + Keybindings::GetKeyString("ToggleRelativNudging")
+        + Keybindings::GetKeyString("ToggleRelativeNudging")
         + ")"
       );
     }
@@ -916,7 +916,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
   } else if (key == Keybindings::GetKey("ToggleVariableUpdate")) {
     refreshVariables = !refreshVariables;
     handled = true;
-  } else if (key == Keybindings::GetKey("ToggleRelativNudging")) {
+  } else if (key == Keybindings::GetKey("ToggleRelativeNudging")) {
     localCoords = !localCoords;
   } else if (key == Keybindings::GetKey("ToggleFixedCursor")) {
     fixCursorPosition = !fixCursorPosition;
