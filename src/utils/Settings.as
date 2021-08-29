@@ -40,6 +40,9 @@ SettingsNudgeMode settingNudgeModeRotation = SettingsNudgeMode::Fixed;
 [Setting name="Show help for nudge modes" category="Main"]
 bool settingShowHelpForNudgeModes = false;
 
+[Setting name="Show tooltip when the nudge direction of the last pressed key has changed" category="Main"]
+bool settingShowTooltipOnNudgeModeNotify = true;
+
 // this is written manually so it doesn't show up
 bool settingFirstUse = true;
 

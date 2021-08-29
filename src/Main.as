@@ -677,9 +677,11 @@ void RenderInterface() {
     vec2 rotationSectionEndPos = UI::GetCursorPos();
     float diff = Time::get_Now() - notifyNudgeKeyChange;
     if (diff < 2000) {
-      UI::BeginTooltip();
-      UI::Text("The nudge direction of the last pressed key has changed!");
-      UI::EndTooltip();
+      if (settingShowTooltipOnNudgeModeNotify) {
+        UI::BeginTooltip();
+        UI::Text("The nudge direction of the last pressed key has changed!");
+        UI::EndTooltip();
+      }
 
       if (diff % 1000 < 500) {
         UI::DrawList@ drawList = UI::GetBackgroundDrawList();
