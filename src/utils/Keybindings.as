@@ -1,4 +1,4 @@
-class Keybindings {
+namespace Keybindings {
   VirtualKey[] keys = {
     VirtualKey::Up,
     VirtualKey::Down,
@@ -121,8 +121,8 @@ class Keybindings {
   string Serialize() {
     Json::Value json = Json::Object();
 
-    for (uint i = 0; i < this.keys.Length; i++) {
-      json[this.names[i]] = Json::Value(int(this.keys[i]));
+    for (uint i = 0; i < keys.Length; i++) {
+      json[names[i]] = Json::Value(int(keys[i]));
     }
 
     return Json::Write(json);

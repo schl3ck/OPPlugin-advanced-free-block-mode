@@ -1,5 +1,5 @@
-class NudgingRelativeToCam {
-  private vec3[] getCoordSystemRelativeToCamera() {
+namespace NudgingRelativeToCam {
+  vec3[] getCoordSystemRelativeToCamera() {
     CGameCtnEditorFree@ editor = GetMapEditor();
     if (editor is null) return {};
     float yaw = editor.OrbitalCameraControl.m_CurrentHAngle;
@@ -86,12 +86,12 @@ class NudgingRelativeToCam {
   vec3 keyToVector(VirtualKey key) {
     vec3 v;
     VirtualKey[] acceptedKeys = {
-      keybindings.GetKey("Forward"),
-      keybindings.GetKey("Backward"),
-      keybindings.GetKey("Left"),
-      keybindings.GetKey("Right"),
-      keybindings.GetKey("Up"),
-      keybindings.GetKey("Down")
+      Keybindings::GetKey("Forward"),
+      Keybindings::GetKey("Backward"),
+      Keybindings::GetKey("Left"),
+      Keybindings::GetKey("Right"),
+      Keybindings::GetKey("Up"),
+      Keybindings::GetKey("Down")
     };
     if (acceptedKeys.Find(key) < 0) {
       return vec3();
@@ -101,27 +101,27 @@ class NudgingRelativeToCam {
     if (coordSystem.Length == 0) return vec3();
 
     vec3 selectedDir = vec3();
-    if (key == keybindings.GetKey("Forward")) {
+    if (key == Keybindings::GetKey("Forward")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[0]
         : coordSystem[2];
-    } else if (key == keybindings.GetKey("Backward")) {
+    } else if (key == Keybindings::GetKey("Backward")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[0] * -1
         : coordSystem[2] * -1;
-    } else if (key == keybindings.GetKey("Left")) {
+    } else if (key == Keybindings::GetKey("Left")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[2] * -1
         : coordSystem[0];
-    } else if (key == keybindings.GetKey("Right")) {
+    } else if (key == Keybindings::GetKey("Right")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[2]
         : coordSystem[0] * -1;
-    } else if (key == keybindings.GetKey("Down")) {
+    } else if (key == Keybindings::GetKey("Down")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[1]
         : coordSystem[1] * -1;
-    } else if (key == keybindings.GetKey("Up")) {
+    } else if (key == Keybindings::GetKey("Up")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[1] * -1
         : coordSystem[1];
@@ -142,21 +142,21 @@ class NudgingRelativeToCam {
     VirtualKey[] keys;
     if (nudgeMode == NudgeMode::Rotation) {
       keys = {
-        keybindings.GetKey("Forward"),
-        keybindings.GetKey("Backward"),
-        keybindings.GetKey("Down"),
-        keybindings.GetKey("Up"),
-        keybindings.GetKey("Right"),
-        keybindings.GetKey("Left")
+        Keybindings::GetKey("Forward"),
+        Keybindings::GetKey("Backward"),
+        Keybindings::GetKey("Down"),
+        Keybindings::GetKey("Up"),
+        Keybindings::GetKey("Right"),
+        Keybindings::GetKey("Left")
       };
     } else {
       keys = {
-        keybindings.GetKey("Left"),
-        keybindings.GetKey("Right"),
-        keybindings.GetKey("Up"),
-        keybindings.GetKey("Down"),
-        keybindings.GetKey("Forward"),
-        keybindings.GetKey("Backward")
+        Keybindings::GetKey("Left"),
+        Keybindings::GetKey("Right"),
+        Keybindings::GetKey("Up"),
+        Keybindings::GetKey("Down"),
+        Keybindings::GetKey("Forward"),
+        Keybindings::GetKey("Backward")
       };
     }
     for (uint i = 0; i < dirs.Length; i++) {

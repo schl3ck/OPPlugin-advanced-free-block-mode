@@ -23,10 +23,7 @@ CoordinateSystem@ coordinateSystem = CoordinateSystem();
 Pivot@ pivotRenderer = Pivot();
 vec2 backgroundSize = vec2();
 
-Keybindings@ keybindings = Keybindings();
 VirtualKey nullKey = VirtualKey(0);
-NudgingFixedAxisPerKey@ nudgingFixedAxisPerKey = NudgingFixedAxisPerKey();
-NudgingRelativeToCam@ nudgingRelativeToCam = NudgingRelativeToCam();
 uint64 notifyNudgeKeyChange = 0;
 
 string nudgeModeHelpText;
@@ -162,13 +159,13 @@ void Render() {
   renderCoordinateSystem(false);
 
   if (focusOnPivot && editor.Cursor.UseFreePos) {
-      nvg::BeginPath();
-      nvg::Circle(vec2(Draw::GetWidth(), Draw::GetHeight()) / 2, 3);
-      nvg::FillColor(vec4(0, 0, 1, 1));
-      nvg::Fill();
-      nvg::StrokeWidth(2);
-      nvg::StrokeColor(vec4(1, 0, 0, 1));
-      nvg::Stroke();
+    nvg::BeginPath();
+    nvg::Circle(vec2(Draw::GetWidth(), Draw::GetHeight()) / 2, 3);
+    nvg::FillColor(vec4(0, 0, 1, 1));
+    nvg::Fill();
+    nvg::StrokeWidth(2);
+    nvg::StrokeColor(vec4(1, 0, 0, 1));
+    nvg::Stroke();
   }
 }
 void renderCoordinateSystem(bool fromPivotRenderer) {
@@ -429,9 +426,9 @@ void RenderInterface() {
       VectorToKeyFunc@ vectorToKey;
       if (nudgeMode == NudgeMode::Rotation) {
         if (settingNudgeModeRotation == SettingsNudgeMode::Fixed) {
-          @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
+          @vectorToKey = NudgingFixedAxisPerKey::vectorToKey;
         } else if (settingNudgeModeRotation == SettingsNudgeMode::RelativeToCamera) {
-          @vectorToKey = VectorToKeyFunc(nudgingRelativeToCam.vectorToKey);
+          @vectorToKey = NudgingRelativeToCam::vectorToKey;
         // } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
         //   @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
         } else {
@@ -445,9 +442,9 @@ void RenderInterface() {
         }
       } else {
         if (settingNudgeModeTranslation == SettingsNudgeMode::Fixed) {
-          @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
+          @vectorToKey = NudgingFixedAxisPerKey::vectorToKey;
         } else if (settingNudgeModeTranslation == SettingsNudgeMode::RelativeToCamera) {
-          @vectorToKey = VectorToKeyFunc(nudgingRelativeToCam.vectorToKey);
+          @vectorToKey = NudgingRelativeToCam::vectorToKey;
         // } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
         //   @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
         } else {
@@ -697,11 +694,11 @@ void RenderInterface() {
     if (oldFixCursorPos != fixCursorPosition && !fixCursorPosition) {
       cursor.UseSnappedLoc = false;
     }
-    if (keybindings.GetKey("ToggleFixedCursor") != nullKey) {
+    if (Keybindings::GetKey("ToggleFixedCursor") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + keybindings.GetKeyString("ToggleFixedCursor")
+        + Keybindings::GetKeyString("ToggleFixedCursor")
         + ")"
       );
     }
@@ -719,11 +716,11 @@ void RenderInterface() {
     } else if (nudgeMode == NudgeMode::Rotation) {
       nudgeMode = NudgeMode::Position;
     }
-    if (keybindings.GetKey("ToggleNudgeMode") != nullKey) {
+    if (Keybindings::GetKey("ToggleNudgeMode") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + keybindings.GetKeyString("ToggleNudgeMode")
+        + Keybindings::GetKeyString("ToggleNudgeMode")
         + ")"
       );
     }
@@ -744,11 +741,11 @@ void RenderInterface() {
     }
 
     localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
-    if (keybindings.GetKey("ToggleRelativNudging") != nullKey) {
+    if (Keybindings::GetKey("ToggleRelativNudging") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + keybindings.GetKeyString("ToggleRelativNudging")
+        + Keybindings::GetKeyString("ToggleRelativNudging")
         + ")"
       );
     }
@@ -760,11 +757,11 @@ void RenderInterface() {
       "Refresh position & rotation variables",
       refreshVariables
     );
-    if (keybindings.GetKey("ToggleVariableUpdate") != nullKey) {
+    if (Keybindings::GetKey("ToggleVariableUpdate") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + keybindings.GetKeyString("ToggleVariableUpdate")
+        + Keybindings::GetKeyString("ToggleVariableUpdate")
         + ")"
       );
     }
@@ -855,7 +852,7 @@ void RenderInterface() {
 
 bool OnKeyPress(bool down, VirtualKey key) {
   if (settingKeyInfoWaitingForKey !is null && down) {
-    keybindings.SetKey(settingKeyInfoWaitingForKey.name, key);
+    Keybindings::SetKey(settingKeyInfoWaitingForKey.name, key);
     @settingKeyInfoWaitingForKey = null;
     return true;
   }
@@ -874,9 +871,9 @@ bool OnKeyPress(bool down, VirtualKey key) {
   KeyToVectorFunc@ keyToVector;
   if (nudgeMode == NudgeMode::Rotation) {
     if (settingNudgeModeRotation == SettingsNudgeMode::Fixed) {
-      @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
+      @keyToVector = NudgingFixedAxisPerKey::keyToVector;
     } else if (settingNudgeModeRotation == SettingsNudgeMode::RelativeToCamera) {
-      @keyToVector = KeyToVectorFunc(nudgingRelativeToCam.keyToVector);
+      @keyToVector = NudgingRelativeToCam::keyToVector;
     // } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
     //   @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
     } else {
@@ -888,9 +885,9 @@ bool OnKeyPress(bool down, VirtualKey key) {
     }
   } else {
     if (settingNudgeModeTranslation == SettingsNudgeMode::Fixed) {
-      @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
+      @keyToVector = NudgingFixedAxisPerKey::keyToVector;
     } else if (settingNudgeModeTranslation == SettingsNudgeMode::RelativeToCamera) {
-      @keyToVector = KeyToVectorFunc(nudgingRelativeToCam.keyToVector);
+      @keyToVector = NudgingRelativeToCam::keyToVector;
     // } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
     //   @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
     } else {
@@ -910,19 +907,19 @@ bool OnKeyPress(bool down, VirtualKey key) {
     } else {
       rotationDelta = stepSizeRad;
     }
-  } else if (key == keybindings.GetKey("ToggleNudgeMode")) {
+  } else if (key == Keybindings::GetKey("ToggleNudgeMode")) {
     nudgeMode = 
       nudgeMode == NudgeMode::Position
       || nudgeMode == NudgeMode::Pivot
         ? NudgeMode::Rotation
         : NudgeMode::Position;
     handled = true;
-  } else if (key == keybindings.GetKey("ToggleVariableUpdate")) {
+  } else if (key == Keybindings::GetKey("ToggleVariableUpdate")) {
     refreshVariables = !refreshVariables;
     handled = true;
-  } else if (key == keybindings.GetKey("ToggleRelativNudging")) {
+  } else if (key == Keybindings::GetKey("ToggleRelativNudging")) {
     localCoords = !localCoords;
-  } else if (key == keybindings.GetKey("ToggleFixedCursor")) {
+  } else if (key == Keybindings::GetKey("ToggleFixedCursor")) {
     fixCursorPosition = !fixCursorPosition;
   }
 

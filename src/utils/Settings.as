@@ -49,25 +49,25 @@ bool settingFirstUse = true;
 void OnSettingsLoad(Settings::Section& section) {
   settingFirstUse = section.GetBool("settingFirstUse", settingFirstUse);
 
-  keybindings.Deserialize(section.GetString("keybindings", "{}"));
+  Keybindings::Deserialize(section.GetString("keybindings", "{}"));
 }
 
 void OnSettingsSave(Settings::Section& section) {
   section.SetBool("settingFirstUse", settingFirstUse);
 
-  section.SetString("keybindings", keybindings.Serialize());
+  section.SetString("keybindings", Keybindings::Serialize());
 }
 
 void RenderSettings() {
   lastSettingsRendered = Time::get_Now();
 
   if (UI::Button("Reset to default")) {
-    keybindings.ResetAllKeys();
+    Keybindings::ResetAllKeys();
   }
   
   SettingKeyInfo@[] keyInfos;
-  for (uint i = 0; i < keybindings.names.Length; i++) {
-    auto keyInfo = SettingKeyInfo(keybindings.names[i]);
+  for (uint i = 0; i < Keybindings::names.Length; i++) {
+    auto keyInfo = SettingKeyInfo(Keybindings::names[i]);
     keyInfo.renderKey();
     keyInfos.InsertLast(keyInfo);
   }
@@ -83,19 +83,21 @@ class SettingKeyInfo {
   }
 
   void renderKey() {
-    printUITextOnButtonBaseline(displayName + ": \\$f90" + keybindings.GetKeyString(name) + "\\$z ");
+    printUITextOnButtonBaseline(
+      displayName + ": \\$f90" + Keybindings::GetKeyString(name) + "\\$z "
+    );
     if (CustomButton("Change", this.name)) {
       @settingKeyInfoWaitingForKey = this;
     }
     UI::SameLine();
     if (CustomButton("Unset", this.name)) {
-      keybindings.SetKey(name, VirtualKey(0));
+      Keybindings::SetKey(name, VirtualKey(0));
     }
     UI::SameLine();
     if (CustomButton("Reset", this.name)) {
-      keybindings.ResetKey(name);
+      Keybindings::ResetKey(name);
     }
-    string description = keybindings.GetKeyDescription(name);
+    string description = Keybindings::GetKeyDescription(name);
     if (description.Length > 0) {
       UI::SameLine();
       UI::SetCursorPos(UI::GetCursorPos() + vec2(0, 4));

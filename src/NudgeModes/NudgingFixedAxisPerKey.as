@@ -1,43 +1,43 @@
-class NudgingFixedAxisPerKey {
+namespace NudgingFixedAxisPerKey {
   vec3 keyToVector(VirtualKey key) {
     vec3 move = vec3(0, 0, 0);
     vec3 axis = vec3(0, 0, 0);
-    if (key == keybindings.GetKey("Left")) {
+    if (key == Keybindings::GetKey("Left")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.x -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x -= 1;
       }
-    } else if (key == keybindings.GetKey("Right")) {
+    } else if (key == Keybindings::GetKey("Right")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.x += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x += 1;
       }
-    } else if (key == keybindings.GetKey("Forward")) {
+    } else if (key == Keybindings::GetKey("Forward")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.z += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z += 1;
       }
-    } else if (key == keybindings.GetKey("Backward")) {
+    } else if (key == Keybindings::GetKey("Backward")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.z -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z -= 1;
       }
-    } else if (key == keybindings.GetKey("Down")) {
+    } else if (key == Keybindings::GetKey("Down")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.y -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
       } else {
         axis.y -= 1;
       }
-    } else if (key == keybindings.GetKey("Up")) {
+    } else if (key == Keybindings::GetKey("Up")) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         move.y += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
@@ -67,12 +67,12 @@ class NudgingFixedAxisPerKey {
       vector = vecRemoveLastD(R * vector);
     }
     VirtualKey[] keys = {
-      keybindings.GetKey("Left"),
-      keybindings.GetKey("Right"),
-      keybindings.GetKey("Up"),
-      keybindings.GetKey("Down"),
-      keybindings.GetKey("Forward"),
-      keybindings.GetKey("Backward")
+      Keybindings::GetKey("Left"),
+      Keybindings::GetKey("Right"),
+      Keybindings::GetKey("Up"),
+      Keybindings::GetKey("Down"),
+      Keybindings::GetKey("Forward"),
+      Keybindings::GetKey("Backward")
     };
     vec3[] dirs = {
       vec3(-1, 0, 0),
