@@ -7,16 +7,16 @@ bool settingShowCoordinateSystem = false;
 [Setting name="Scale" min=10 max=250 category="Coordinate system"]
 int settingCoordinateSystemScale = 50;
 
-[Setting name="Position of coordinate system and pivot position" category="Coordinate system"]
+[Setting name="Position" category="Coordinate system" description="Position of coordinate system & pivot visualizer"]
 vec2 settingCoordinateSystemPosition = vec2(200, 200);
 
-[Setting name="Move coordinate system" description="Use this to easily move the position." category="Coordinate system"]
+[Setting name="Move coordinate system" description="Use this to easily move the position" category="Coordinate system"]
 bool settingMoveCoordinateSystem = false;
 
 [Setting name="Show pivot position" category="Pivot position"]
 bool settingShowPivotRenderer = false;
 
-[Setting name="Position of rendered pivot position helper relative to the coordinate system" description="\"Center\" renders it on top of the coordinate system" category="Pivot position"]
+[Setting name="Relative position" description="Relative to coordinate system. \"Center\" renders it on top of the coordinate system" category="Pivot position"]
 PivotRendererPosition settingPivotRelativePosition = PivotRendererPosition::Center;
 
 [Setting name="Scale" min=10 max=250 category="Pivot position"]
