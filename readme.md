@@ -35,7 +35,7 @@ A utility tool to place blocks pixel perfect in the free block mode.
 The hotkeys only work if your mouse cursor is not over any interface of Openplanet. This is a limitation of Openplanet itself.
 Also the block may flicker sometimes between the fixed position and your mouse cursor. This is normal because Trackmania isn't built that the to-be-placed block and your mouse cursor are not together. Just move your mouse some pixels or wait a bit until it stops again.
 
-Some lines may be on top of others when they shouldn't be when rendering the coordinate system and pivot position on top of each other.
+Some lines may be on top of others when they shouldn't be when rendering the coordinate system and block visualizer on top of each other.
 
 # How to install
 Download it from https://openplanet.nl/files/109. You can also find a tutorial there how to install the plugin.
@@ -51,7 +51,7 @@ Changed default keybinding
 Draw point on screen when fixing camera to pivot position
 Add button to reset pivot position
 Display pivot position in interface
-Fix incorrect display of block frame relative to the pivot position
+Fix incorrect display of block frame in block visualizer
 
 ## v1.1 - 2021-08-01
 Add adbility to move the pivot point for rotations

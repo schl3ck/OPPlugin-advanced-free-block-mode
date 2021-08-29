@@ -20,7 +20,7 @@ float epsilon = 0.0001;
 
 Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
 CoordinateSystem@ coordinateSystem = CoordinateSystem();
-Pivot@ pivotRenderer = Pivot();
+BlockVisualizer@ blockVisualizer = BlockVisualizer();
 vec2 backgroundSize = vec2();
 
 VirtualKey nullKey = VirtualKey(0);
@@ -47,7 +47,7 @@ enum PositionNudgeMode {
   GridSizeMultiple
 }
 
-enum PivotRendererPosition {
+enum BlockVisualizerPosition {
   Top,
   Left,
   Center,
@@ -137,22 +137,22 @@ void Render() {
 
   backgroundSize = renderOverlayBackground();
 
-  if (settingShowPivotRenderer) {
+  if (settingShowBlockVisualizer) {
     vec2 pos = vec2(settingCoordinateSystemPosition);
-    if (settingPivotRelativePosition == PivotRendererPosition::Right) {
+    if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Right) {
       pos.x += coordinateSystem.size.x;
     }
-    if (settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+    if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Bottom) {
       pos.y += coordinateSystem.size.y;
     }
-    pivotRenderer.Render(
+    blockVisualizer.Render(
       pos,
       cursorYaw,
       cursorPitch,
       cursorRoll,
       renderCoordinateSystem,
       pivotPosition,
-      getTileSize(pivotRenderer.size)
+      getTileSize(blockVisualizer.size)
     );
   }
 
@@ -168,26 +168,26 @@ void Render() {
     nvg::Stroke();
   }
 }
-void renderCoordinateSystem(bool fromPivotRenderer) {
+void renderCoordinateSystem(bool fromBlockVisualizer) {
   if (!settingShowCoordinateSystem) return;
   if (
-    fromPivotRenderer
-    && settingPivotRelativePosition != PivotRendererPosition::Center
+    fromBlockVisualizer
+    && settingBlockVisualizerRelativePosition != BlockVisualizerPosition::Center
   )
     return;
   if (
-    !fromPivotRenderer
-    && settingPivotRelativePosition == PivotRendererPosition::Center
-    && settingShowPivotRenderer
+    !fromBlockVisualizer
+    && settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Center
+    && settingShowBlockVisualizer
   )
     return;
 
   vec2 pos = vec2(settingCoordinateSystemPosition);
-  if (settingPivotRelativePosition == PivotRendererPosition::Left) {
-    pos.x += pivotRenderer.size.x;
+  if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Left) {
+    pos.x += blockVisualizer.size.x;
   }
-  if (settingPivotRelativePosition == PivotRendererPosition::Top) {
-    pos.y += pivotRenderer.size.y;
+  if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Top) {
+    pos.y += blockVisualizer.size.y;
   }
   coordinateSystem.Render(
     pos,
@@ -199,30 +199,30 @@ void renderCoordinateSystem(bool fromPivotRenderer) {
   );
 }
 vec2 renderOverlayBackground() {
-  if (!settingShowCoordinateSystem && !settingShowPivotRenderer) return vec2();
+  if (!settingShowCoordinateSystem && !settingShowBlockVisualizer) return vec2();
   vec2 coordinateSize = coordinateSystem.size;
-  vec2 pivotSize = pivotRenderer.size;
+  vec2 blockVisualizerSize = blockVisualizer.size;
   vec2 size = vec2();
-  if (!settingShowPivotRenderer) size = coordinateSize;
-  else if (!settingShowCoordinateSystem) size = pivotSize;
+  if (!settingShowBlockVisualizer) size = coordinateSize;
+  else if (!settingShowCoordinateSystem) size = blockVisualizerSize;
   else {
     // both are displayed
-    if (settingPivotRelativePosition == PivotRendererPosition::Top
-      || settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+    if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Top
+      || settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Bottom) {
       size = vec2(
-        Math::Max(coordinateSize.x, pivotSize.x),
-        coordinateSize.y + pivotSize.y
+        Math::Max(coordinateSize.x, blockVisualizerSize.x),
+        coordinateSize.y + blockVisualizerSize.y
       );
-    } else if (settingPivotRelativePosition == PivotRendererPosition::Left
-      || settingPivotRelativePosition == PivotRendererPosition::Right) {
+    } else if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Left
+      || settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Right) {
       size = vec2(
-        coordinateSize.x + pivotSize.x,
-        Math::Max(coordinateSize.y, pivotSize.y)
+        coordinateSize.x + blockVisualizerSize.x,
+        Math::Max(coordinateSize.y, blockVisualizerSize.y)
       );
     } else {
       size = vec2(
-        Math::Max(coordinateSize.x, pivotSize.x),
-        Math::Max(coordinateSize.y, pivotSize.y)
+        Math::Max(coordinateSize.x, blockVisualizerSize.x),
+        Math::Max(coordinateSize.y, blockVisualizerSize.y)
       );
     }
   }
@@ -244,11 +244,11 @@ vec2 renderOverlayBackground() {
   return size;
 }
 vec2 getTileSize(vec2 ownSize) {
-  if (settingPivotRelativePosition == PivotRendererPosition::Top
-    || settingPivotRelativePosition == PivotRendererPosition::Bottom) {
+  if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Top
+    || settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Bottom) {
     return vec2(backgroundSize.x, ownSize.y);
-  } else if (settingPivotRelativePosition == PivotRendererPosition::Left
-    || settingPivotRelativePosition == PivotRendererPosition::Right) {
+  } else if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Left
+    || settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Right) {
     return vec2(ownSize.x, backgroundSize.y);
   } else {
     return backgroundSize;
@@ -260,7 +260,7 @@ void RenderMenu() {
   if (UI::BeginMenu("\\$f90" + Icons::Gavel + "\\$z Advanced Free Block Mode")) {
     bool current = settingShowInterface
       && settingShowCoordinateSystem
-      && settingShowPivotRenderer;
+      && settingShowBlockVisualizer;
     if (UI::MenuItem(
       "Show/hide all",
       "",
@@ -269,7 +269,7 @@ void RenderMenu() {
     )) {
       settingShowInterface = !current;
       settingShowCoordinateSystem = !current;
-      settingShowPivotRenderer = !current;
+      settingShowBlockVisualizer = !current;
     }
 
     if (UI::MenuItem(
@@ -291,19 +291,18 @@ void RenderMenu() {
     }
 
     if (UI::MenuItem(
-      "Show pivot position",
+      "Show block visualizer",
       "",
-      settingShowPivotRenderer,
+      settingShowBlockVisualizer,
       editor !is null
     )) {
-      settingShowPivotRenderer = !settingShowPivotRenderer;
+      settingShowBlockVisualizer = !settingShowBlockVisualizer;
     }
 
     UI::EndMenu();
   }
 }
 
-// TODO: notify user when the axis for the currently pressed key changed
 void RenderInterface() {
   if (settingMoveCoordinateSystem) {
     UI::SetNextWindowPos(

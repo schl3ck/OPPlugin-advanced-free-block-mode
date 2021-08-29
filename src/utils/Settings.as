@@ -7,20 +7,20 @@ bool settingShowCoordinateSystem = false;
 [Setting name="Scale" min=10 max=250 category="Coordinate system"]
 int settingCoordinateSystemScale = 50;
 
-[Setting name="Position" category="Coordinate system" description="Position of coordinate system & pivot visualizer"]
+[Setting name="Position" category="Coordinate system" description="Position of coordinate system & block visualizer"]
 vec2 settingCoordinateSystemPosition = vec2(200, 200);
 
 [Setting name="Move coordinate system" description="Use this to easily move the position" category="Coordinate system"]
 bool settingMoveCoordinateSystem = false;
 
-[Setting name="Show pivot position" category="Pivot position"]
-bool settingShowPivotRenderer = false;
+[Setting name="Show block visualizer" category="Block visualizer"]
+bool settingShowBlockVisualizer = false;
 
-[Setting name="Relative position" description="Relative to coordinate system. \"Center\" renders it on top of the coordinate system" category="Pivot position"]
-PivotRendererPosition settingPivotRelativePosition = PivotRendererPosition::Center;
+[Setting name="Relative position" description="Relative to coordinate system. \"Center\" renders it on top of the coordinate system" category="Block visualizer"]
+BlockVisualizerPosition settingBlockVisualizerRelativePosition = BlockVisualizerPosition::Center;
 
-[Setting name="Scale" min=10 max=250 category="Pivot position"]
-int settingPivotRendererScale = 50;
+[Setting name="Scale" min=10 max=250 category="Block visualizer"]
+int settingBlockVisualizerScale = 50;
 
 [Setting name="Display rotations in degrees (otherwise in radians)" category="Main"]
 bool settingRotationInDeg = true;

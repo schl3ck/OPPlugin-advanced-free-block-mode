@@ -1,10 +1,10 @@
-funcdef void PCB(bool fromPivot);
+funcdef void PCB(bool fromBlockVisualizer);
 
-class Pivot {
+class BlockVisualizer {
 
   vec2 size {
     get const {
-      return vec2(3.6, 3.6) * settingPivotRendererScale;
+      return vec2(3.6, 3.6) * settingBlockVisualizerScale;
     }
   }
   CGameCtnEditorFree@ Editor {
@@ -31,7 +31,7 @@ class Pivot {
   ) {
     vec2 startPos = position + tileSize / 2;
     vec2 curPos = vec2(startPos);
-    float scale = settingPivotRendererScale;
+    float scale = settingBlockVisualizerScale;
 
     // get block size
     CGameCtnBlockInfo@ blockInfo = Editor.CurrentGhostBlockInfo;
@@ -156,7 +156,7 @@ class Pivot {
       {zero + y, z}
     };
 
-    if (settingPivotRelativePosition != PivotRendererPosition::Center) {
+    if (settingBlockVisualizerRelativePosition != BlockVisualizerPosition::Center) {
       DrawPivot(startPos);
     }
 
