@@ -51,6 +51,7 @@ string fmt(float f) {
 }
 
 string virtualKeyToString(VirtualKey key) {
+  if (key == VirtualKey(0)) return "";
   string[] parts = tostring(key).Split("::");
   string s = parts[parts.Length - 1];
   if (KeyToIconMap.Exists(s)) {
@@ -92,4 +93,47 @@ void printUITextOnButtonBaseline(string text) {
   UI::SameLine();
   cursorPos = UI::GetCursorPos();
   UI::SetCursorPos(cursorPos - vec2(0, 4));
+}
+
+bool CustomButton(string label, string id) {
+  vec2 pos = UI::GetCursorPos();
+  vec4 buttonColor = vec4(47, 98, 165, 255) / 255;
+  vec4 buttonColorHovered = vec4(64, 151, 250, 255) / 255;
+  vec2 textSize = Draw::MeasureString(label);
+  vec2 padding = vec2(6, 4);
+  float scrollbarWidth = UI::GetScrollMaxY() > 0 ? 16 : 0;
+
+  bool clicked = UI::InvisibleButton(
+    label + id,
+    textSize + padding * 2,
+    UI::ButtonFlags::MouseButtonLeft
+  );
+
+  bool hovered = UI::IsItemHovered();
+  vec2 buttonPos = pos
+    + UI::GetWindowPos()
+    - vec2(UI::GetScrollX(), UI::GetScrollY());
+  vec2 buttonSize = textSize + padding * 2;
+  vec4 buttonRect = vec4(
+    buttonPos.x,
+    buttonPos.y,
+    buttonSize.x,
+    buttonSize.y);
+  UI::DrawList@ drawList = UI::GetForegroundDrawList();
+  drawList.PushClipRect(
+    vec4(
+      UI::GetWindowPos().x,
+      UI::GetWindowPos().y,
+      UI::GetWindowSize().x - scrollbarWidth,
+      UI::GetWindowSize().y
+    )
+  );
+  drawList.AddRectFilled(
+    buttonRect,
+    hovered ? buttonColorHovered : buttonColor,
+    4.0f
+  );
+  drawList.AddText(buttonPos + padding, vec4(1, 1, 1, 1), label);
+
+  return clicked;
 }

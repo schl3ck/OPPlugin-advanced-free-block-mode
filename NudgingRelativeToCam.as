@@ -86,12 +86,12 @@ class NudgingRelativeToCam {
   vec3 keyToVector(VirtualKey key) {
     vec3 v;
     VirtualKey[] acceptedKeys = {
-      settingKeyForward,
-      settingKeyBackward,
-      settingKeyLeft,
-      settingKeyRight,
-      settingKeyUp,
-      settingKeyDown
+      keybindings.GetKey("Forward"),
+      keybindings.GetKey("Backward"),
+      keybindings.GetKey("Left"),
+      keybindings.GetKey("Right"),
+      keybindings.GetKey("Up"),
+      keybindings.GetKey("Down")
     };
     if (acceptedKeys.Find(key) < 0) {
       return vec3();
@@ -101,27 +101,27 @@ class NudgingRelativeToCam {
     if (coordSystem.Length == 0) return vec3();
 
     vec3 selectedDir = vec3();
-    if (key == settingKeyForward) {
+    if (key == keybindings.GetKey("Forward")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[0]
         : coordSystem[2];
-    } else if (key == settingKeyBackward) {
+    } else if (key == keybindings.GetKey("Backward")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[0] * -1
         : coordSystem[2] * -1;
-    } else if (key == settingKeyLeft) {
+    } else if (key == keybindings.GetKey("Left")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[2] * -1
         : coordSystem[0];
-    } else if (key == settingKeyRight) {
+    } else if (key == keybindings.GetKey("Right")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[2]
         : coordSystem[0] * -1;
-    } else if (key == settingKeyDown) {
+    } else if (key == keybindings.GetKey("Down")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[1]
         : coordSystem[1] * -1;
-    } else if (key == settingKeyUp) {
+    } else if (key == keybindings.GetKey("Up")) {
       selectedDir = nudgeMode == NudgeMode::Rotation
         ? coordSystem[1] * -1
         : coordSystem[1];
@@ -142,21 +142,21 @@ class NudgingRelativeToCam {
     VirtualKey[] keys;
     if (nudgeMode == NudgeMode::Rotation) {
       keys = {
-        settingKeyForward,
-        settingKeyBackward,
-        settingKeyDown,
-        settingKeyUp,
-        settingKeyRight,
-        settingKeyLeft
+        keybindings.GetKey("Forward"),
+        keybindings.GetKey("Backward"),
+        keybindings.GetKey("Down"),
+        keybindings.GetKey("Up"),
+        keybindings.GetKey("Right"),
+        keybindings.GetKey("Left")
       };
     } else {
       keys = {
-        settingKeyLeft,
-        settingKeyRight,
-        settingKeyUp,
-        settingKeyDown,
-        settingKeyForward,
-        settingKeyBackward
+        keybindings.GetKey("Left"),
+        keybindings.GetKey("Right"),
+        keybindings.GetKey("Up"),
+        keybindings.GetKey("Down"),
+        keybindings.GetKey("Forward"),
+        keybindings.GetKey("Backward")
       };
     }
     for (uint i = 0; i < dirs.Length; i++) {

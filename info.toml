@@ -2,6 +2,7 @@
 name = "Advanced Free Block Mode"
 author = "schl3ck"
 category = "Map Editor"
+min_game_version = "2021-08-28"
 
 siteid = 109
 version = "1.1"

@@ -40,36 +40,68 @@ SettingsNudgeMode settingNudgeModeRotation = SettingsNudgeMode::Fixed;
 [Setting name="Show help for nudge modes" category="Main"]
 bool settingShowHelpForNudgeModes = false;
 
-[Setting name="Forward key" category="Keymap" description="Moves the block in the horizontal plane"]
-VirtualKey settingKeyForward = VirtualKey::Up;
-[Setting name="Backward key" category="Keymap" description="Moves the block in the horizontal plane"]
-VirtualKey settingKeyBackward = VirtualKey::Down;
-[Setting name="Left key" category="Keymap" description="Moves the block in the horizontal plane"]
-VirtualKey settingKeyLeft = VirtualKey::Left;
-[Setting name="Right key" category="Keymap" description="Moves the block in the horizontal plane"]
-VirtualKey settingKeyRight = VirtualKey::Right;
-[Setting name="Up key" category="Keymap" description="Moves the block on the vertical axis"]
-VirtualKey settingKeyUp = VirtualKey::Prior;
-[Setting name="Down key" category="Keymap" description="Moves the block on the vertical axis"]
-VirtualKey settingKeyDown = VirtualKey::Next;
-[Setting name="Toggle fixed cursor state" category="Keymap"]
-VirtualKey settingKeyToggleFixedCursor = VirtualKey::N;
-[Setting name="Toggle nudge mode" category="Keymap"]
-VirtualKey settingKeyToggleNudgeMode = VirtualKey::L;
-[Setting name="Toggle nudging relative to block orientation" category="Keymap"]
-VirtualKey settingKeyToggleRelativNudging = VirtualKey::J;
-[Setting name="Toggle refreshing of variables" category="Keymap"]
-VirtualKey settingKeyToggleVariableUpdate = VirtualKey::T;
-[Setting name="Cycle through the axis" category="Keymap" description="Only used in Nudge Mode 'SelectedAxis'"]
-VirtualKey settingKeyCycleAxis = VirtualKey::B;
-
 // this is written manually so it doesn't show up
 bool settingFirstUse = true;
 
 void OnSettingsLoad(Settings::Section& section) {
   settingFirstUse = section.GetBool("settingFirstUse", settingFirstUse);
+
+  keybindings.Deserialize(section.GetString("keybindings", "{}"));
 }
 
 void OnSettingsSave(Settings::Section& section) {
   section.SetBool("settingFirstUse", settingFirstUse);
+
+  section.SetString("keybindings", keybindings.Serialize());
+}
+
+void RenderSettings() {
+  lastSettingsRendered = Time::get_Now();
+
+  if (UI::Button("Reset to default")) {
+    keybindings.ResetAllKeys();
+  }
+  
+  SettingKeyInfo@[] keyInfos;
+  for (uint i = 0; i < keybindings.names.Length; i++) {
+    auto keyInfo = SettingKeyInfo(keybindings.names[i]);
+    keyInfo.renderKey();
+    keyInfos.InsertLast(keyInfo);
+  }
+}
+
+class SettingKeyInfo {
+  string name;
+  string displayName;
+
+  SettingKeyInfo(string name) {
+    this.name = name;
+    displayName = Regex::Replace(name, "([a-z])([A-Z])", "$1 $2");
+  }
+
+  void renderKey() {
+    printUITextOnButtonBaseline(displayName + ": \\$f90" + keybindings.GetKeyString(name) + "\\$z ");
+    if (CustomButton("Change", this.name)) {
+      @settingKeyInfoWaitingForKey = this;
+    }
+    UI::SameLine();
+    if (CustomButton("Unset", this.name)) {
+      keybindings.SetKey(name, VirtualKey(0));
+    }
+    UI::SameLine();
+    if (CustomButton("Reset", this.name)) {
+      keybindings.ResetKey(name);
+    }
+    string description = keybindings.GetKeyDescription(name);
+    if (description.Length > 0) {
+      UI::SameLine();
+      UI::SetCursorPos(UI::GetCursorPos() + vec2(0, 4));
+      UI::TextDisabled(Icons::QuestionCircle);
+      if (UI::IsItemHovered()) {
+        UI::BeginTooltip();
+        UI::Text(description);
+        UI::EndTooltip();
+      }
+    }
+  }
 }

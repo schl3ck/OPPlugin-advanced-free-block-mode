@@ -24,11 +24,14 @@ Pivot@ pivotRenderer = Pivot();
 vec2 backgroundSize = vec2();
 bool DrawAPIRemoved = false;
 
+Keybindings@ keybindings = Keybindings();
 VirtualKey nullKey = VirtualKey(0);
 NudgingFixedAxisPerKey@ nudgingFixedAxisPerKey = NudgingFixedAxisPerKey();
 NudgingRelativeToCam@ nudgingRelativeToCam = NudgingRelativeToCam();
 
 string nudgeModeHelpText;
+SettingKeyInfo@ settingKeyInfoWaitingForKey;
+uint64 lastSettingsRendered = 0;
 
 enum NudgeMode {
   Position,
@@ -62,7 +65,9 @@ dictionary KeyToIconMap = {
   { "Up", Icons::LongArrowUp },
   { "Down", Icons::LongArrowDown },
   { "Left", Icons::LongArrowLeft },
-  { "Right", Icons::LongArrowRight }
+  { "Right", Icons::LongArrowRight },
+  { "Prior", "Page" + Icons::LongArrowUp },
+  { "Next", "Page" + Icons::LongArrowDown }
 };
 
 void Main() {
@@ -340,6 +345,36 @@ void RenderInterface() {
     UI::Markdown(nudgeModeHelpText);
 
     UI::End();
+  }
+
+  if (settingKeyInfoWaitingForKey !is null) {
+    bool windowShown = true;
+    vec2 size = vec2(250, 178);
+    UI::Begin(
+      "\\$f90" + Icons::Gavel + "\\$z Waiting for key...",
+      windowShown,
+      UI::WindowFlags::NoCollapse
+      | UI::WindowFlags::NoResize
+    );
+    UI::SetWindowSize(size);
+
+    UI::TextWrapped(
+      "Please press the key you want to assign to \\$f90"
+      + settingKeyInfoWaitingForKey.displayName
+    );
+    UI::TextWrapped(
+      "\\$777Note: the key is only recognised when your mouse cursor is not over any Openplanet interface!"
+    );
+    UI::NewLine();
+    if (UI::Button("Cancel")) {
+      @settingKeyInfoWaitingForKey = null;
+    }
+    UI::SameLine();
+
+    UI::End();
+    if (!windowShown || Time::get_Now() - lastSettingsRendered > 20) {
+      @settingKeyInfoWaitingForKey = null;
+    }
   }
 
   CGameCtnEditorFree@ editor = GetMapEditor();
@@ -645,11 +680,11 @@ void RenderInterface() {
     if (oldFixCursorPos != fixCursorPosition && !fixCursorPosition) {
       cursor.UseSnappedLoc = false;
     }
-    if (settingKeyToggleFixedCursor != nullKey) {
+    if (keybindings.GetKey("ToggleFixedCursor") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + virtualKeyToString(settingKeyToggleFixedCursor)
+        + keybindings.GetKeyString("ToggleFixedCursor")
         + ")"
       );
     }
@@ -667,11 +702,11 @@ void RenderInterface() {
     } else if (nudgeMode == NudgeMode::Rotation) {
       nudgeMode = NudgeMode::Position;
     }
-    if (settingKeyToggleNudgeMode != nullKey) {
+    if (keybindings.GetKey("ToggleNudgeMode") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + virtualKeyToString(settingKeyToggleNudgeMode)
+        + keybindings.GetKeyString("ToggleNudgeMode")
         + ")"
       );
     }
@@ -692,11 +727,11 @@ void RenderInterface() {
     }
 
     localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
-    if (settingKeyToggleRelativNudging != nullKey) {
+    if (keybindings.GetKey("ToggleRelativNudging") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + virtualKeyToString(settingKeyToggleRelativNudging)
+        + keybindings.GetKeyString("ToggleRelativNudging")
         + ")"
       );
     }
@@ -708,11 +743,11 @@ void RenderInterface() {
       "Refresh position & rotation variables",
       refreshVariables
     );
-    if (settingKeyToggleVariableUpdate != nullKey) {
+    if (keybindings.GetKey("ToggleVariableUpdate") != nullKey) {
       UI::SameLine();
       UI::TextDisabled(
         "(Toggle with "
-        + virtualKeyToString(settingKeyToggleVariableUpdate)
+        + keybindings.GetKeyString("ToggleVariableUpdate")
         + ")"
       );
     }
@@ -802,6 +837,12 @@ void RenderInterface() {
 }
 
 bool OnKeyPress(bool down, VirtualKey key) {
+  if (settingKeyInfoWaitingForKey !is null && down) {
+    keybindings.SetKey(settingKeyInfoWaitingForKey.name, key);
+    @settingKeyInfoWaitingForKey = null;
+    return true;
+  }
+  
   if (!settingShowInterface || !down)
     return false;
   CGameCtnEditorFree@ editor = GetMapEditor();
@@ -852,19 +893,19 @@ bool OnKeyPress(bool down, VirtualKey key) {
     } else {
       rotationDelta = stepSizeRad;
     }
-  } else if (key == settingKeyToggleNudgeMode) {
+  } else if (key == keybindings.GetKey("ToggleNudgeMode")) {
     nudgeMode = 
       nudgeMode == NudgeMode::Position
       || nudgeMode == NudgeMode::Pivot
         ? NudgeMode::Rotation
         : NudgeMode::Position;
     handled = true;
-  } else if (key == settingKeyToggleVariableUpdate) {
+  } else if (key == keybindings.GetKey("ToggleVariableUpdate")) {
     refreshVariables = !refreshVariables;
     handled = true;
-  } else if (key == settingKeyToggleRelativNudging) {
+  } else if (key == keybindings.GetKey("ToggleRelativNudging")) {
     localCoords = !localCoords;
-  } else if (key == settingKeyToggleFixedCursor) {
+  } else if (key == keybindings.GetKey("ToggleFixedCursor")) {
     fixCursorPosition = !fixCursorPosition;
   }
 
