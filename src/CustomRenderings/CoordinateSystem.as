@@ -19,7 +19,8 @@ class CoordinateSystem {
     float yaw,
     float pitch,
     float roll,
-    vec2 tileSize
+    vec2 tileSize,
+    vec3 highlightAxis
   ) {
     vec2 curPos = position;
     float scale = settingCoordinateSystemScale;
@@ -48,6 +49,13 @@ class CoordinateSystem {
     };
     for (uint i = 0; i < dirWithColor.Length; i++) {
       vec3 v = vec3(dirWithColor[i]["dir"]);
+      if (
+        !VectorsEqual(vec3(), highlightAxis)
+        && !VectorsEqual(v, highlightAxis)
+        && !VectorsEqual(v * -1, highlightAxis)
+      ) {
+        dirWithColor[i]["color"] = vec4(dirWithColor[i]["color"]) / 2;
+      }
       if (local) {
         v = rotateVec3(v, -yaw, -pitch, roll);
       }

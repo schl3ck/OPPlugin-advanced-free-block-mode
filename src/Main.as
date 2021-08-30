@@ -195,7 +195,14 @@ void renderCoordinateSystem(bool fromBlockVisualizer) {
     cursorYaw,
     cursorPitch,
     cursorRoll,
-    getTileSize(coordinateSystem.size)
+    getTileSize(coordinateSystem.size),
+    (
+      nudgeMode == NudgeMode::Rotation
+      ? settingNudgeModeRotation
+      : settingNudgeModeTranslation
+    ) == SettingsNudgeMode::SelectedAxis
+      ? NudgingSelectedAxis::nudgeAxes[NudgingSelectedAxis::nudgeAxisIndex]
+      : vec3()
   );
 }
 vec2 renderOverlayBackground() {
