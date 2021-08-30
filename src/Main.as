@@ -428,8 +428,8 @@ void RenderInterface() {
           @vectorToKey = NudgingFixedAxisPerKey::vectorToKey;
         } else if (settingNudgeModeRotation == SettingsNudgeMode::RelativeToCamera) {
           @vectorToKey = NudgingRelativeToCam::vectorToKey;
-        // } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
-        //   @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
+        } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
+          @vectorToKey = NudgingSelectedAxis::vectorToKey;
         } else {
           @vectorToKey = function(vec3 vector) {
             return nullKey;
@@ -444,8 +444,8 @@ void RenderInterface() {
           @vectorToKey = NudgingFixedAxisPerKey::vectorToKey;
         } else if (settingNudgeModeTranslation == SettingsNudgeMode::RelativeToCamera) {
           @vectorToKey = NudgingRelativeToCam::vectorToKey;
-        // } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
-        //   @vectorToKey = VectorToKeyFunc(nudgingFixedAxisPerKey.vectorToKey);
+        } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
+          @vectorToKey = NudgingSelectedAxis::vectorToKey;
         } else {
           @vectorToKey = function(vec3 vector) {
             return nullKey;
@@ -873,8 +873,8 @@ bool OnKeyPress(bool down, VirtualKey key) {
       @keyToVector = NudgingFixedAxisPerKey::keyToVector;
     } else if (settingNudgeModeRotation == SettingsNudgeMode::RelativeToCamera) {
       @keyToVector = NudgingRelativeToCam::keyToVector;
-    // } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
-    //   @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
+    } else if (settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis) {
+      @keyToVector = NudgingSelectedAxis::keyToVector;
     } else {
       print(
         "\\$f90Advanced Free Block Mode: \\$f00Unknown nudge mode for rotating the block: \\$z"
@@ -887,8 +887,8 @@ bool OnKeyPress(bool down, VirtualKey key) {
       @keyToVector = NudgingFixedAxisPerKey::keyToVector;
     } else if (settingNudgeModeTranslation == SettingsNudgeMode::RelativeToCamera) {
       @keyToVector = NudgingRelativeToCam::keyToVector;
-    // } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
-    //   @keyToVector = KeyToVectorFunc(nudgingFixedAxisPerKey.keyToVector);
+    } else if (settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis) {
+      @keyToVector = NudgingSelectedAxis::keyToVector;
     } else {
       print(
         "\\$f90Advanced Free Block Mode: \\$f00Unknown nudge mode for moving the block: \\$z"
@@ -918,8 +918,22 @@ bool OnKeyPress(bool down, VirtualKey key) {
     handled = true;
   } else if (key == Keybindings::GetKey("ToggleRelativeNudging")) {
     localCoords = !localCoords;
+    handled = true;
   } else if (key == Keybindings::GetKey("ToggleFixedCursor")) {
     fixCursorPosition = !fixCursorPosition;
+    handled = true;
+  } else if (
+    key == Keybindings::GetKey("CycleAxis")
+    && (
+      nudgeMode == NudgeMode::Rotation
+      ? settingNudgeModeRotation == SettingsNudgeMode::SelectedAxis
+      : settingNudgeModeTranslation == SettingsNudgeMode::SelectedAxis
+    )
+  ) {
+    NudgingSelectedAxis::nudgeAxisIndex =
+      (NudgingSelectedAxis::nudgeAxisIndex + 1)
+      % NudgingSelectedAxis::nudgeAxes.Length;
+    handled = true;
   }
 
   if (fixCursorPosition) {
