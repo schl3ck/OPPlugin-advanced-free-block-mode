@@ -119,7 +119,7 @@ bool CustomButton(string label, string id) {
     buttonPos.y,
     buttonSize.x,
     buttonSize.y);
-  UI::DrawList@ drawList = UI::GetForegroundDrawList();
+  UI::DrawList@ drawList = UI::GetWindowDrawList();
   drawList.PushClipRect(
     vec4(
       UI::GetWindowPos().x,
