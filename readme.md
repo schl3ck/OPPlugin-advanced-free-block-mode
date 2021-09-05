@@ -43,7 +43,15 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 # Future plans
 * Maybe render a point on the screen showing the current pivot point in the map. Couldn't get that to work properly yet though.
 
+# Contribute
+You can find the source code to this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
+
 # Changelog
+## v1.2.1 - 2021-09-06
+* Fix plugin crash on start because of wrong path separator
+* Tidy up interface
+* Tidy up some code
+
 ## v1.2 - 2021-08-31
 * Add new nudge mode where the axis is selected depeding on the current camera yaw angle
 * Add new nudge mode where the axis is selected by a key (like rotating in the mesh modeler)

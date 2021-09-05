@@ -5,7 +5,7 @@ category = "Map Editor"
 min_game_version = "2021-08-28"
 
 siteid = 109
-version = "1.2"
+version = "1.2.1"
 
 [script]
 imports = [ "Icons.as", "Permissions.as" ]
