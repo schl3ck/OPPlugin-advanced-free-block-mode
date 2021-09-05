@@ -83,24 +83,25 @@ class SettingKeyInfo {
   }
 
   void renderKey() {
+    UI::PushID(displayName);
     printUITextOnButtonBaseline(
       displayName + ": \\$f90" + Keybindings::GetKeyString(name) + "\\$z "
     );
-    if (CustomButton("Change", this.name)) {
+    if (UI::Button("Change")) {
       @settingKeyInfoWaitingForKey = this;
     }
     UI::SameLine();
-    if (CustomButton("Unset", this.name)) {
+    if (UI::Button("Unset")) {
       Keybindings::SetKey(name, VirtualKey(0));
     }
     UI::SameLine();
-    if (CustomButton("Reset", this.name)) {
+    if (UI::Button("Reset")) {
       Keybindings::ResetKey(name);
     }
     string description = Keybindings::GetKeyDescription(name);
     if (description.Length > 0) {
       UI::SameLine();
-      UI::SetCursorPos(UI::GetCursorPos() + vec2(0, 4));
+      // UI::SetCursorPos(UI::GetCursorPos() + vec2(0, 4));
       UI::TextDisabled(Icons::QuestionCircle);
       if (UI::IsItemHovered()) {
         UI::BeginTooltip();
@@ -108,5 +109,6 @@ class SettingKeyInfo {
         UI::EndTooltip();
       }
     }
+    UI::PopID();
   }
 }
