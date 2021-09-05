@@ -82,7 +82,7 @@ void Main() {
   }
   settingFirstUse = false;
 
-  nudgeModeHelpText = replaceIcons(readPluginFile("src\\NudgeModes\\nudgeModeHelp.md"));
+  nudgeModeHelpText = replaceIcons(readPluginFile("src/NudgeModes/nudgeModeHelp.md"));
 
   while (true) {
     CGameCtnEditorFree@ editor = GetMapEditor();
