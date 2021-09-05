@@ -470,7 +470,9 @@ void RenderInterface() {
 
       UI::Text("X");
       if (fixCursorPosition) {
-        cursorPosition.x = UI::InputFloat("X", cursorPosition.x, 0);
+        UI::PushID("X");
+        cursorPosition.x = UI::InputFloat("", cursorPosition.x, 0);
+        UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.x));
       }
@@ -491,7 +493,9 @@ void RenderInterface() {
 
       UI::Text("Y");
       if (fixCursorPosition) {
-        cursorPosition.y = UI::InputFloat("Y", cursorPosition.y, 0);
+        UI::PushID("Y");
+        cursorPosition.y = UI::InputFloat("", cursorPosition.y, 0);
+        UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.y));
       }
@@ -512,7 +516,9 @@ void RenderInterface() {
 
       UI::Text("Z");
       if (fixCursorPosition) {
-        cursorPosition.z = UI::InputFloat("Z", cursorPosition.z, 0);
+        UI::PushID("Z");
+        cursorPosition.z = UI::InputFloat("", cursorPosition.z, 0);
+        UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.z));
       }
@@ -536,7 +542,9 @@ void RenderInterface() {
       UI::Columns(3, "2", false);
 
       UI::Text("X");
-      pivotPosition.x = UI::InputFloat("X", pivotPosition.x, 0);
+      UI::PushID("X");
+      pivotPosition.x = UI::InputFloat("", pivotPosition.x, 0);
+      UI::PopID();
       if (keysForNudgeDirs[0] != nullKey && keysForNudgeDirs[1] != nullKey) {
         UI::Text(
           "Nudge with\n\\$f90"
@@ -549,7 +557,9 @@ void RenderInterface() {
       UI::NextColumn();
 
       UI::Text("Y");
-      pivotPosition.y = UI::InputFloat("Y", pivotPosition.y, 0);
+      UI::PushID("Y");
+      pivotPosition.y = UI::InputFloat("", pivotPosition.y, 0);
+      UI::PopID();
       if (keysForNudgeDirs[2] != nullKey && keysForNudgeDirs[3] != nullKey) {
         UI::Text(
           "Nudge with\n\\$f90"
@@ -562,7 +572,9 @@ void RenderInterface() {
       UI::NextColumn();
 
       UI::Text("Z");
-      pivotPosition.z = UI::InputFloat("Z", pivotPosition.z, 0);
+      UI::PushID("Z");
+      pivotPosition.z = UI::InputFloat("", pivotPosition.z, 0);
+      UI::PopID();
       if (keysForNudgeDirs[4] != nullKey && keysForNudgeDirs[5] != nullKey) {
         UI::Text(
           "Nudge with\n\\$f90"
@@ -598,7 +610,9 @@ void RenderInterface() {
 
     UI::Text("X (Roll)");
     if (fixCursorPosition) {
-      cursorRoll = UI::InputFloat("r", cursorRoll, 0);
+      UI::PushID("r");
+      cursorRoll = UI::InputFloat("", cursorRoll, 0);
+      UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorRoll));
     }
@@ -619,7 +633,9 @@ void RenderInterface() {
 
     UI::Text("Y (Yaw)");
     if (fixCursorPosition) {
-      cursorYaw = UI::InputFloat("y", cursorYaw, 0);
+      UI::PushID("y");
+      cursorYaw = UI::InputFloat("", cursorYaw, 0);
+      UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorYaw));
     }
@@ -640,7 +656,9 @@ void RenderInterface() {
 
     UI::Text("Z (Pitch)");
     if (fixCursorPosition) {
-      cursorPitch = UI::InputFloat("p", cursorPitch, 0);
+      UI::PushID("p");
+      cursorPitch = UI::InputFloat("", cursorPitch, 0);
+      UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorPitch));
     }
