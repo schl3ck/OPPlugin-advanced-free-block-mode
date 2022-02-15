@@ -349,6 +349,7 @@ void RenderInterface() {
   if (settingKeyInfoWaitingForKey !is null) {
     bool windowShown = true;
     vec2 size = vec2(250, 178);
+    UI::PushStyleVar(UI::StyleVar::Alpha, 1.1);
     UI::Begin(
       "\\$f90" + Icons::Gavel + "\\$z Waiting for key...",
       windowShown,
@@ -371,6 +372,7 @@ void RenderInterface() {
     UI::SameLine();
 
     UI::End();
+    UI::PopStyleVar();
     if (!windowShown || Time::get_Now() - lastSettingsRendered > 20) {
       @settingKeyInfoWaitingForKey = null;
     }
