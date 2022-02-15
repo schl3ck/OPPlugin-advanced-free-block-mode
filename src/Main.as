@@ -471,7 +471,7 @@ void RenderInterface() {
       UI::Text("X");
       if (fixCursorPosition) {
         UI::PushID("X");
-        cursorPosition.x = UI::InputFloat("", cursorPosition.x, 0);
+        cursorPosition.x = UI::InputFloat("##Pos", cursorPosition.x, 0);
         UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.x));
@@ -494,7 +494,7 @@ void RenderInterface() {
       UI::Text("Y");
       if (fixCursorPosition) {
         UI::PushID("Y");
-        cursorPosition.y = UI::InputFloat("", cursorPosition.y, 0);
+        cursorPosition.y = UI::InputFloat("##Pos", cursorPosition.y, 0);
         UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.y));
@@ -517,7 +517,7 @@ void RenderInterface() {
       UI::Text("Z");
       if (fixCursorPosition) {
         UI::PushID("Z");
-        cursorPosition.z = UI::InputFloat("", cursorPosition.z, 0);
+        cursorPosition.z = UI::InputFloat("##Pos", cursorPosition.z, 0);
         UI::PopID();
       } else {
         UI::Text(Text::Format("%f", cursorPosition.z));
@@ -543,7 +543,7 @@ void RenderInterface() {
 
       UI::Text("X");
       UI::PushID("X");
-      pivotPosition.x = UI::InputFloat("", pivotPosition.x, 0);
+      pivotPosition.x = UI::InputFloat("##Pivot", pivotPosition.x, 0);
       UI::PopID();
       if (keysForNudgeDirs[0] != nullKey && keysForNudgeDirs[1] != nullKey) {
         UI::Text(
@@ -558,7 +558,7 @@ void RenderInterface() {
 
       UI::Text("Y");
       UI::PushID("Y");
-      pivotPosition.y = UI::InputFloat("", pivotPosition.y, 0);
+      pivotPosition.y = UI::InputFloat("##Pivot", pivotPosition.y, 0);
       UI::PopID();
       if (keysForNudgeDirs[2] != nullKey && keysForNudgeDirs[3] != nullKey) {
         UI::Text(
@@ -573,7 +573,7 @@ void RenderInterface() {
 
       UI::Text("Z");
       UI::PushID("Z");
-      pivotPosition.z = UI::InputFloat("", pivotPosition.z, 0);
+      pivotPosition.z = UI::InputFloat("##Pivot", pivotPosition.z, 0);
       UI::PopID();
       if (keysForNudgeDirs[4] != nullKey && keysForNudgeDirs[5] != nullKey) {
         UI::Text(
@@ -611,7 +611,7 @@ void RenderInterface() {
     UI::Text("X (Roll)");
     if (fixCursorPosition) {
       UI::PushID("r");
-      cursorRoll = UI::InputFloat("", cursorRoll, 0);
+      cursorRoll = UI::InputFloat("##Rotation", cursorRoll, 0);
       UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorRoll));
@@ -634,7 +634,7 @@ void RenderInterface() {
     UI::Text("Y (Yaw)");
     if (fixCursorPosition) {
       UI::PushID("y");
-      cursorYaw = UI::InputFloat("", cursorYaw, 0);
+      cursorYaw = UI::InputFloat("##Rotation", cursorYaw, 0);
       UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorYaw));
@@ -657,7 +657,7 @@ void RenderInterface() {
     UI::Text("Z (Pitch)");
     if (fixCursorPosition) {
       UI::PushID("p");
-      cursorPitch = UI::InputFloat("", cursorPitch, 0);
+      cursorPitch = UI::InputFloat("##Rotation", cursorPitch, 0);
       UI::PopID();
     } else {
       UI::Text(Text::Format("%f", cursorPitch));
@@ -801,7 +801,7 @@ void RenderInterface() {
 
     UI::Text("Step size");
     if (UI::BeginCombo(
-      " ",
+      "##StepSize",
       positionNudgeMode == PositionNudgeMode::Simple
         ? "Simple"
         : "Grid size multiple",
