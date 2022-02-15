@@ -66,8 +66,8 @@ void RenderSettings() {
   }
   
   SettingKeyInfo@[] keyInfos;
-  for (uint i = 0; i < Keybindings::names.Length; i++) {
-    auto keyInfo = SettingKeyInfo(Keybindings::names[i]);
+  for (uint i = 0; i < Keybindings::keys.Length; i++) {
+    auto keyInfo = SettingKeyInfo(Keybindings::keys[i].name);
     keyInfo.renderKey();
     keyInfos.InsertLast(keyInfo);
   }
