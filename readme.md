@@ -53,8 +53,8 @@ You can find the source code to this plugin on [GitHub](https://github.com/schl3
 * Tidy up some code
 
 ## v1.2 - 2021-08-31
-* Add new nudge mode where the axis is selected depeding on the current camera yaw angle
-* Add new nudge mode where the axis is selected by a key (like rotating in the mesh modeler)
+* Add new nudge mode where the axis is selected depending on the current camera yaw angle
+* Add new nudge mode where the axis is selected by a key (like rotating in the mesh modeller)
 * Add help for the different nudge modes
 * Add ability to remap the keys
 * Changed default keybinding
@@ -64,7 +64,7 @@ You can find the source code to this plugin on [GitHub](https://github.com/schl3
 * Fix incorrect display of block frame in block visualizer
 
 ## v1.1 - 2021-08-01
-* Add adbility to move the pivot point for rotations
+* Add ability to move the pivot point for rotations
 
 ## v1.0 - 2021-07-24
 Initial release
