@@ -220,7 +220,7 @@ class BlockVisualizer {
     nvg::Fill();
   }
 
-  bool addUniqueSize(nat3[] arr, nat3 size) {
+  bool addUniqueSize(nat3[]& arr, nat3 size) {
     for (uint i = 0; i < arr.Length; i++) {
       auto item = arr[i];
       if (item.x == size.x && item.y == size.y && item.z == size.z) {
