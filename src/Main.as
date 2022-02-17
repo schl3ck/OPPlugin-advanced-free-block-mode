@@ -459,11 +459,22 @@ void RenderInterface() {
       nudgeMode = NudgeMode::Position;
     }
 
+    string keysForHeaderBar = "";
+    string empty = Icons::Kenney::ButtonEmpty;
+    for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
+      VirtualKey k = keysForNudgeDirs[i];
+      string s = "\\$f90" + (k == nullKey ? empty : virtualKeyToString(k)) + "\\$z";
+      if (i > 0) {
+        keysForHeaderBar += i % 2 == 0 ? " | " : " & ";
+      }
+      keysForHeaderBar += s;
+    }
+
     bool isPosOrRotNudgeMode = nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Rotation;
     bool isPivotNudgeMode = nudgeMode == NudgeMode::Pivot;
     string positionHeaderTitle = isPosOrRotNudgeMode ? "Fixed position" : "Pivot position";
     if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-      // positionHeaderTitle += " \\$f90" + Icons::Kenney::ButtonEmpty;
+      positionHeaderTitle += " " + keysForHeaderBar;
     }
     if (UI::CollapsingHeader(positionHeaderTitle)) {
       if (isPosOrRotNudgeMode) {
@@ -618,7 +629,12 @@ void RenderInterface() {
     }
 
 
-    if (UI::CollapsingHeader("Fixed rotation")) {
+    if (
+      UI::CollapsingHeader(
+        "Fixed rotation"
+        + (nudgeMode == NudgeMode::Rotation ? " " + keysForHeaderBar : "")
+      )
+    ) {
       if (settingRotationInDeg) {
         cursorYaw = Math::ToDeg(cursorYaw);
         cursorPitch = Math::ToDeg(cursorPitch);
@@ -1002,54 +1018,54 @@ bool OnKeyPress(bool down, VirtualKey key) {
 
   if (fixCursorPosition) {
     // undo movement of page up & down keys
-    if (key == VirtualKey::Prior) {
-      editor.OrbitalCameraControl.m_TargetedPosition.y -= 1;
-      editor.OrbitalCameraControl.Pos.y -= 1;
-    } else if (key == VirtualKey::Next) {
-      editor.OrbitalCameraControl.m_TargetedPosition.y += 1;
-      editor.OrbitalCameraControl.Pos.y += 1;
-    }
-  }
+    // if (key == VirtualKey::Prior) {
+    //   editor.OrbitalCameraControl.m_TargetedPosition.y -= 1;
+    //   editor.OrbitalCameraControl.Pos.y -= 1;
+    // } else if (key == VirtualKey::Next) {
+    //   editor.OrbitalCameraControl.m_TargetedPosition.y += 1;
+    //   editor.OrbitalCameraControl.Pos.y += 1;
+    // }
 
-  if (move.Length() > 0) {
-    if (nudgeMode == NudgeMode::Pivot) {
-      pivotPosition += move;
-    } else {
-      cursorPosition += move;
+    if (move.Length() > 0) {
+      if (nudgeMode == NudgeMode::Pivot) {
+        pivotPosition += move;
+      } else {
+        cursorPosition += move;
+      }
+      handled = true;
+    } else if (rotationDelta > 0) {
+      cursorPosition += rotateVec3(
+        pivotPosition,
+        cursorYaw,
+        cursorPitch,
+        cursorRoll
+      );
+      float[] res = rotateRotations(
+        cursorYaw,
+        cursorPitch,
+        cursorRoll,
+        rotationDelta,
+        axis,
+        localCoords
+      );
+      cursorYaw = res[0];
+      cursorPitch = res[1];
+      cursorRoll = res[2];
+      cursorPosition -= rotateVec3(
+        pivotPosition,
+        cursorYaw,
+        cursorPitch,
+        cursorRoll
+      );
+      // check if key has changed
+      // FIXME: they sometimes are not equal even though the direction hasn't changed
+      vec3 newNudgeDir = keyToVector(key);
+      if (!VectorsEqual(nudgeDir, newNudgeDir)) {
+        notifyNudgeKeyChange = Time::get_Now();
+      }
+      
+      handled = true;
     }
-    handled = true;
-  } else if (rotationDelta > 0) {
-    cursorPosition += rotateVec3(
-      pivotPosition,
-      cursorYaw,
-      cursorPitch,
-      cursorRoll
-    );
-    float[] res = rotateRotations(
-      cursorYaw,
-      cursorPitch,
-      cursorRoll,
-      rotationDelta,
-      axis,
-      localCoords
-    );
-    cursorYaw = res[0];
-    cursorPitch = res[1];
-    cursorRoll = res[2];
-    cursorPosition -= rotateVec3(
-      pivotPosition,
-      cursorYaw,
-      cursorPitch,
-      cursorRoll
-    );
-    // check if key has changed
-    // FIXME: they sometimes are not equal even though the direction hasn't changed
-    vec3 newNudgeDir = keyToVector(key);
-    if (!VectorsEqual(nudgeDir, newNudgeDir)) {
-      notifyNudgeKeyChange = Time::get_Now();
-    }
-    
-    handled = true;
   }
   return handled;
 }
