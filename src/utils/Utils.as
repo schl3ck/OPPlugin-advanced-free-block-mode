@@ -50,14 +50,37 @@ string fmt(float f) {
   return Text::Format("%f", f);
 }
 
-string virtualKeyToString(VirtualKey key) {
+string virtualKeyToString(VirtualKey key, bool colorize = false) {
   if (key == VirtualKey(0)) return "";
   string[] parts = tostring(key).Split("::");
   string s = parts[parts.Length - 1];
   if (KeyToIconMap.Exists(s)) {
     s = string(KeyToIconMap[s]);
   }
+  if (colorize) {
+    s = "\\$f90" + s + "\\$z";
+  }
   return s;
+}
+string virtualKeyToString(const VirtualKey[] &in keys, bool colorize = false) {
+  string s = "";
+  for (uint i = 0; i < keys.Length; i++) {
+    if (s.Length > 0) {
+      s += " + ";
+    }
+    s += virtualKeyToString(keys[i], colorize);
+  }
+  return s;
+}
+string debugKeyToString(const VirtualKey[] &in keys) {
+  string s = "";
+  for (uint i = 0; i < keys.Length; i++) {
+    if (s.Length > 0) {
+      s += ", ";
+    }
+    s += tostring(keys[i]);
+  }
+  return "{ " + s + " }";
 }
 
 string readPluginFile(string filename) {
@@ -93,4 +116,8 @@ void printUITextOnButtonBaseline(string text) {
   UI::SameLine();
   cursorPos = UI::GetCursorPos();
   UI::SetCursorPos(cursorPos - vec2(0, 4));
+}
+
+int b2i(bool b) {
+  return b ? 1 : 0;
 }

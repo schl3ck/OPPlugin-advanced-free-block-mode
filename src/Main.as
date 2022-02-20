@@ -55,8 +55,8 @@ enum BlockVisualizerPosition {
   Bottom
 };
 
-funcdef VirtualKey VectorToKeyFunc(vec3 vector);
-funcdef vec3 KeyToVectorFunc(VirtualKey key);
+funcdef VirtualKey[] VectorToKeyFunc(vec3 vector);
+funcdef vec3 KeyToVectorFunc(const VirtualKey[] &in key);
 
 dictionary KeyToIconMap = {
   { "Up", Icons::LongArrowUp },
@@ -64,7 +64,9 @@ dictionary KeyToIconMap = {
   { "Left", Icons::LongArrowLeft },
   { "Right", Icons::LongArrowRight },
   { "Prior", "Page" + Icons::LongArrowUp },
-  { "Next", "Page" + Icons::LongArrowDown }
+  { "Next", "Page" + Icons::LongArrowDown },
+  { "Control", "Ctrl" },
+  { "Menu", "Alt" }
 };
 
 void Main() {
@@ -274,6 +276,7 @@ void RenderMenu() {
       current,
       editor !is null
     )) {
+      ModifierKeys::Reset();
       settingShowInterface = !current;
       settingShowCoordinateSystem = !current;
       settingShowBlockVisualizer = !current;
@@ -285,6 +288,7 @@ void RenderMenu() {
       settingShowInterface,
       editor !is null
     )) {
+      ModifierKeys::Reset();
       settingShowInterface = !settingShowInterface;
     }
 
@@ -355,6 +359,7 @@ void RenderInterface() {
       windowShown,
       UI::WindowFlags::NoCollapse
       | UI::WindowFlags::NoResize
+      | UI::WindowFlags::AlwaysAutoResize
     );
     UI::SetWindowSize(size);
 
@@ -362,9 +367,10 @@ void RenderInterface() {
       "Please press the key you want to assign to \\$f90"
       + settingKeyInfoWaitingForKey.displayName
     );
-    UI::TextWrapped(
-      "\\$777Note: the key is only recognised when your mouse cursor is not over any Openplanet interface!"
-    );
+    string modifierKeys = virtualKeyToString(ModifierKeys::GetKeys(), true);
+    modifierKeys = Regex::Replace(modifierKeys, " \\+", ",");
+    UI::Text("Pressed modifier Keys: [ " + modifierKeys + " ]");
+
     UI::NewLine();
     if (UI::Button("Cancel")) {
       @settingKeyInfoWaitingForKey = null;
@@ -386,10 +392,17 @@ void RenderInterface() {
       "\\$f90" + Icons::Gavel + "\\$z Advanced Free Block Mode",
       settingShowInterface,
       UI::WindowFlags::NoResize
+      | UI::WindowFlags::AlwaysAutoResize
+      | UI::WindowFlags::NoDocking
     );
-    uint uiHeight = 184;
-    
     CGameCursorBlock@ cursor = editor.Cursor;
+
+    string modifierKeys = virtualKeyToString(ModifierKeys::GetKeys(), true);
+    modifierKeys = Regex::Replace(modifierKeys, " \\+", ",");
+    printUITextOnButtonBaseline("Pressed modifier Keys: [ " + modifierKeys + " ]");
+    if (UI::Button("Reset")) {
+      ModifierKeys::Reset();
+    }
 
     if (UI::CollapsingHeader("Current position")) {
       vec3 pos = cursor.FreePosInMap;
@@ -403,8 +416,6 @@ void RenderInterface() {
       UI::Text("Z");
       UI::Text(Text::Format("%f", pos.z));
       UI::Columns(1, "1", false);
-
-      uiHeight += 44;
     }
 
     vec3[] nudgeDirs = {
@@ -415,7 +426,7 @@ void RenderInterface() {
       vec3(0, 0, 1),
       vec3(0, 0, -1)
     };
-    VirtualKey[] keysForNudgeDirs;
+    VirtualKey[][] keysForNudgeDirs(nudgeDirs.Length);
     for (uint i = 0; i < nudgeDirs.Length; i++) {
       if (nudgeMode == NudgeMode::Pivot || localCoords) {
         nudgeDirs[i] = rotateVec3(
@@ -443,7 +454,7 @@ void RenderInterface() {
         @vectorToKey = NudgingSelectedAxis::vectorToKey;
       } else {
         @vectorToKey = function(vec3 vector) {
-          return nullKey;
+          return {};
         };
         print(
           "\\$f90Advanced Free Block Mode: \\$f00Unknown nudge mode for "
@@ -452,7 +463,7 @@ void RenderInterface() {
           + tostring(settingNudgeModeRotation)
         );
       }
-      keysForNudgeDirs.InsertLast(vectorToKey(nudgeDirs[i]));
+      keysForNudgeDirs[i] = vectorToKey(nudgeDirs[i]);
     }
 
     if (!fixCursorPosition && nudgeMode == NudgeMode::Pivot) {
@@ -462,8 +473,8 @@ void RenderInterface() {
     string keysForHeaderBar = "";
     string empty = Icons::Kenney::ButtonEmpty;
     for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
-      VirtualKey k = keysForNudgeDirs[i];
-      string s = "\\$f90" + (k == nullKey ? empty : virtualKeyToString(k)) + "\\$z";
+      VirtualKey[] k = keysForNudgeDirs[i];
+      string s = k.Length == 0 ? "\\$f90" + empty + "\\$z" : virtualKeyToString(k, true);
       if (i > 0) {
         keysForHeaderBar += i % 2 == 0 ? " | " : " & ";
       }
@@ -491,15 +502,14 @@ void RenderInterface() {
         }
         if (
           nudgeMode == NudgeMode::Position
-          && keysForNudgeDirs[0] != nullKey
-          && keysForNudgeDirs[1] != nullKey
+          && keysForNudgeDirs[0].Length > 0
+          && keysForNudgeDirs[1].Length > 0
         ) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[0])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[1])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[0], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[1], true)
           );
         }
         UI::NextColumn();
@@ -514,15 +524,14 @@ void RenderInterface() {
         }
         if (
           nudgeMode == NudgeMode::Position
-          && keysForNudgeDirs[2] != nullKey
-          && keysForNudgeDirs[3] != nullKey
+          && keysForNudgeDirs[2].Length > 0
+          && keysForNudgeDirs[3].Length > 0
         ) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[2])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[3])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[2], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[3], true)
           );
         }
         UI::NextColumn();
@@ -537,31 +546,25 @@ void RenderInterface() {
         }
         if (
           nudgeMode == NudgeMode::Position
-          && keysForNudgeDirs[4] != nullKey
-          && keysForNudgeDirs[5] != nullKey
+          && keysForNudgeDirs[4].Length > 0
+          && keysForNudgeDirs[5].Length > 0
         ) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[4])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[5])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[4], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[5], true)
           );
         }
         UI::Columns(1, "3", false);
 
-        uiHeight += 44;
-        if (fixCursorPosition) uiHeight += 8;
         if (nudgeMode == NudgeMode::Position) {
           bool hasKey = false;
           for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
-            if (keysForNudgeDirs[i] != nullKey) {
+            if (keysForNudgeDirs[i].Length > 0) {
               hasKey = true;
               break;
             }
-          }
-          if (hasKey) {
-            uiHeight += 38;
           }
         }
       } else if (isPivotNudgeMode) {
@@ -572,13 +575,12 @@ void RenderInterface() {
         UI::PushID("X");
         pivotPosition.x = UI::InputFloat("##Pivot", pivotPosition.x, 0);
         UI::PopID();
-        if (keysForNudgeDirs[0] != nullKey && keysForNudgeDirs[1] != nullKey) {
+        if (keysForNudgeDirs[0].Length > 0 && keysForNudgeDirs[1].Length > 0) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[0])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[1])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[0], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[1], true)
           );
         }
         UI::NextColumn();
@@ -587,13 +589,12 @@ void RenderInterface() {
         UI::PushID("Y");
         pivotPosition.y = UI::InputFloat("##Pivot", pivotPosition.y, 0);
         UI::PopID();
-        if (keysForNudgeDirs[2] != nullKey && keysForNudgeDirs[3] != nullKey) {
+        if (keysForNudgeDirs[2].Length > 0 && keysForNudgeDirs[3].Length > 0) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[2])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[3])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[2], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[3], true)
           );
         }
         UI::NextColumn();
@@ -602,28 +603,22 @@ void RenderInterface() {
         UI::PushID("Z");
         pivotPosition.z = UI::InputFloat("##Pivot", pivotPosition.z, 0);
         UI::PopID();
-        if (keysForNudgeDirs[4] != nullKey && keysForNudgeDirs[5] != nullKey) {
+        if (keysForNudgeDirs[4].Length > 0 && keysForNudgeDirs[5].Length > 0) {
           UI::Text(
-            "Nudge with\n\\$f90"
-            + virtualKeyToString(keysForNudgeDirs[4])
-            + "\\$z & \\$f90"
-            + virtualKeyToString(keysForNudgeDirs[5])
-            + "\\$z"
+            "Nudge with\n"
+            + virtualKeyToString(keysForNudgeDirs[4], true)
+            + " & "
+            + virtualKeyToString(keysForNudgeDirs[5], true)
           );
         }
         UI::Columns(1, "3", false);
 
-        uiHeight += 44;
-        if (fixCursorPosition) uiHeight += 8;
         bool hasKey = false;
         for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
-          if (keysForNudgeDirs[i] != nullKey) {
+          if (keysForNudgeDirs[i].Length > 0) {
             hasKey = true;
             break;
           }
-        }
-        if (hasKey) {
-          uiHeight += 38;
         }
       }
     }
@@ -654,15 +649,14 @@ void RenderInterface() {
       }
       if (
         nudgeMode == NudgeMode::Rotation
-        && keysForNudgeDirs[0] != nullKey
-        && keysForNudgeDirs[1] != nullKey
+        && keysForNudgeDirs[0].Length > 0
+        && keysForNudgeDirs[1].Length > 0
       ) {
         UI::Text(
-          "Nudge with\n\\$f90"
-          + virtualKeyToString(keysForNudgeDirs[0])
-          + "\\$z & \\$f90"
-          + virtualKeyToString(keysForNudgeDirs[1])
-          + "\\$z"
+          "Nudge with\n"
+          + virtualKeyToString(keysForNudgeDirs[0], true)
+          + " & "
+          + virtualKeyToString(keysForNudgeDirs[1], true)
         );
       }
       UI::NextColumn();
@@ -677,15 +671,14 @@ void RenderInterface() {
       }
       if (
         nudgeMode == NudgeMode::Rotation
-        && keysForNudgeDirs[2] != nullKey
-        && keysForNudgeDirs[3] != nullKey
+        && keysForNudgeDirs[2].Length > 0
+        && keysForNudgeDirs[3].Length > 0
       ) {
         UI::Text(
-          "Nudge with\n\\$f90"
-          + virtualKeyToString(keysForNudgeDirs[2])
-          + "\\$z & \\$f90"
-          + virtualKeyToString(keysForNudgeDirs[3])
-          + "\\$z"
+          "Nudge with\n"
+          + virtualKeyToString(keysForNudgeDirs[2], true)
+          + " & "
+          + virtualKeyToString(keysForNudgeDirs[3], true)
         );
       }
       UI::NextColumn();
@@ -700,31 +693,25 @@ void RenderInterface() {
       }
       if (
         nudgeMode == NudgeMode::Rotation
-        && keysForNudgeDirs[4] != nullKey
-        && keysForNudgeDirs[5] != nullKey
+        && keysForNudgeDirs[4].Length > 0
+        && keysForNudgeDirs[5].Length > 0
       ) {
         UI::Text(
-          "Nudge with\n\\$f90"
-          + virtualKeyToString(keysForNudgeDirs[4])
-          + "\\$z & \\$f90"
-          + virtualKeyToString(keysForNudgeDirs[5])
-          + "\\$z"
+          "Nudge with\n"
+          + virtualKeyToString(keysForNudgeDirs[4], true)
+          + " & "
+          + virtualKeyToString(keysForNudgeDirs[5], true)
         );
       }
       UI::Columns(1, "5", false);
 
-      uiHeight += 44;
-      if (fixCursorPosition) uiHeight += 8;
       if (nudgeMode == NudgeMode::Rotation) {
         bool hasKey = false;
         for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
-          if (keysForNudgeDirs[i] != nullKey) {
+          if (keysForNudgeDirs[i].Length > 0) {
             hasKey = true;
             break;
           }
-        }
-        if (hasKey) {
-          uiHeight += 38;
         }
       }
 
@@ -762,11 +749,11 @@ void RenderInterface() {
       if (oldFixCursorPos != fixCursorPosition && !fixCursorPosition) {
         cursor.UseSnappedLoc = false;
       }
-      if (Keybindings::GetKey("ToggleFixedCursor") != nullKey) {
+      if (Keybindings::GetKey("ToggleFixedCursor").Length > 0) {
         UI::SameLine();
         UI::TextDisabled(
-          "(Toggle with "
-          + Keybindings::GetKeyString("ToggleFixedCursor")
+          "("
+          + Keybindings::GetKeyString("ToggleFixedCursor", true)
           + ")"
         );
       }
@@ -784,23 +771,31 @@ void RenderInterface() {
       } else if (nudgeMode == NudgeMode::Rotation) {
         nudgeMode = NudgeMode::Position;
       }
-      if (Keybindings::GetKey("ToggleNudgeMode") != nullKey) {
+      if (Keybindings::GetKey("ToggleNudgeMode").Length > 0) {
         UI::SameLine();
         UI::TextDisabled(
-          "(Toggle with "
-          + Keybindings::GetKeyString("ToggleNudgeMode")
+          "("
+          + Keybindings::GetKeyString("ToggleNudgeMode", true)
           + ")"
         );
       }
 
-        UI::BeginDisabled(!fixCursorPosition);
+      UI::BeginDisabled(!fixCursorPosition);
       if (UI::Checkbox("Nudge pivot point", nudgeMode == NudgeMode::Pivot)) {
         nudgeMode = NudgeMode::Pivot;
         localCoords = true;
       } else if (nudgeMode == NudgeMode::Pivot) {
         nudgeMode = NudgeMode::Rotation;
       }
-        UI::EndDisabled();
+      UI::EndDisabled();
+      if (Keybindings::GetKey("ToggleNudgePivotPoint").Length > 0) {
+        UI::SameLine();
+        UI::TextDisabled(
+          "("
+          + Keybindings::GetKeyString("ToggleNudgePivotPoint", true)
+          + ")"
+        );
+      }
       if (!VectorsEqual(pivotPosition, vec3(0, 0, 0))) {
         UI::SameLine();
         if (UI::Button("Reset")) {
@@ -811,11 +806,11 @@ void RenderInterface() {
       }
 
       localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
-      if (Keybindings::GetKey("ToggleRelativeNudging") != nullKey) {
+      if (Keybindings::GetKey("ToggleRelativeNudging").Length > 0) {
         UI::SameLine();
         UI::TextDisabled(
-          "(Toggle with "
-          + Keybindings::GetKeyString("ToggleRelativeNudging")
+          "("
+          + Keybindings::GetKeyString("ToggleRelativeNudging", true)
           + ")"
         );
       }
@@ -827,11 +822,11 @@ void RenderInterface() {
         "Refresh position & rotation variables",
         refreshVariables
       );
-      if (Keybindings::GetKey("ToggleVariableUpdate") != nullKey) {
+      if (Keybindings::GetKey("ToggleVariableUpdate").Length > 0) {
         UI::SameLine();
         UI::TextDisabled(
-          "(Toggle with "
-          + Keybindings::GetKeyString("ToggleVariableUpdate")
+          "("
+          + Keybindings::GetKeyString("ToggleVariableUpdate", true)
           + ")"
         );
       }
@@ -840,8 +835,23 @@ void RenderInterface() {
         focusOnPivot = false;
       }
       focusOnPivot = UI::Checkbox("Focus camera on pivot", focusOnPivot);
+      if (Keybindings::GetKey("ToggleFocusOnPivot").Length > 0) {
+        UI::SameLine();
+        UI::TextDisabled(
+          "("
+          + Keybindings::GetKeyString("ToggleFocusOnPivot", true)
+          + ")"
+        );
+      }
       UI::SameLine();
-      if(UI::Button("Focus once")) {
+
+      string focusOnceKeybinding = "";
+      if (Keybindings::GetKey("FocusOnceOnPivot").Length > 0) {
+        focusOnceKeybinding = " ("
+          + Keybindings::GetKeyString("FocusOnceOnPivot", true)
+          + ")";
+      }
+      if(UI::Button("Focus once" + focusOnceKeybinding)) {
         FocusCameraOnPivot();
       }
 
@@ -849,8 +859,6 @@ void RenderInterface() {
         "Hide block helpers",
         editor.HideBlockHelpers
       );
-
-      uiHeight += 210;
     }
 
     if (UI::CollapsingHeader("Step size")) {
@@ -907,12 +915,9 @@ void RenderInterface() {
         settingStepSizeRotation,
         1.0f
       );
-
-      uiHeight += 120;
     }
 
     if (fixCursorPosition) {
-      uiHeight += 92;
       UI::NewLine();
       UI::TextWrapped(
         "Place the block by clicking anywhere.\n"
@@ -920,30 +925,30 @@ void RenderInterface() {
         + "This is because the game thinks the block should be beneath your mouse pointer."
       );
     }
-
-    UI::SetWindowSize(
-      vec2(
-        390,
-        uiHeight
-      ),
-      UI::Cond::Always
-    );
     UI::End();
   }
 }
 
 bool OnKeyPress(bool down, VirtualKey key) {
-  if (settingKeyInfoWaitingForKey !is null && down) {
-    Keybindings::SetKey(settingKeyInfoWaitingForKey.name, key);
-    @settingKeyInfoWaitingForKey = null;
-    return true;
+  if (settingKeyInfoWaitingForKey !is null) {
+    if (!ModifierKeys::Handle(down, key)) {
+      auto keys = ModifierKeys::GetKeys(key);
+      Keybindings::SetKey(settingKeyInfoWaitingForKey.name, keys);
+      @settingKeyInfoWaitingForKey = null;
+      return true;
+    }
   }
   
-  if (!settingShowInterface || !down)
+  if (!settingShowInterface)
     return false;
   CGameCtnEditorFree@ editor = GetMapEditor();
   if (editor is null)
     return false;
+
+  // maybe handles it twice, but that is no problem
+  ModifierKeys::Handle(down, key);
+
+  if (!down) return false;
 
   bool handled = false;
   vec3 move = vec3();
@@ -976,7 +981,9 @@ bool OnKeyPress(bool down, VirtualKey key) {
     return false;
   }
 
-  vec3 nudgeDir = keyToVector(key);
+  VirtualKey[] keyCombination = ModifierKeys::GetKeys(key);
+
+  vec3 nudgeDir = keyToVector(keyCombination);
   vec3 axis = nudgeDir;
   if (!VectorsEqual(nudgeDir, vec3())) {
     if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
@@ -984,24 +991,36 @@ bool OnKeyPress(bool down, VirtualKey key) {
     } else {
       rotationDelta = stepSizeRad;
     }
-  } else if (key == Keybindings::GetKey("ToggleNudgeMode")) {
+  } else if (Keybindings::Matches("ToggleNudgeMode", keyCombination)) {
     nudgeMode = 
       nudgeMode == NudgeMode::Position
       || nudgeMode == NudgeMode::Pivot
         ? NudgeMode::Rotation
         : NudgeMode::Position;
     handled = true;
-  } else if (key == Keybindings::GetKey("ToggleVariableUpdate")) {
+  } else if (Keybindings::Matches("ToggleNudgePivotPoint", keyCombination)) {
+    nudgeMode = 
+      nudgeMode == NudgeMode::Pivot
+        ? NudgeMode::Rotation
+        : NudgeMode::Pivot;
+    handled = true;
+  } else if (Keybindings::Matches("ToggleVariableUpdate", keyCombination)) {
     refreshVariables = !refreshVariables;
     handled = true;
-  } else if (key == Keybindings::GetKey("ToggleRelativeNudging")) {
+  } else if (Keybindings::Matches("ToggleRelativeNudging", keyCombination)) {
     localCoords = !localCoords;
     handled = true;
-  } else if (key == Keybindings::GetKey("ToggleFixedCursor")) {
+  } else if (Keybindings::Matches("ToggleFixedCursor", keyCombination)) {
     fixCursorPosition = !fixCursorPosition;
     handled = true;
+  } else if (Keybindings::Matches("ToggleFocusOnPivot", keyCombination)) {
+    focusOnPivot = !focusOnPivot;
+    handled = true;
+  } else if (Keybindings::Matches("FocusOnceOnPivot", keyCombination)) {
+    FocusCameraOnPivot();
+    handled = true;
   } else if (
-    key == Keybindings::GetKey("CycleAxis")
+    Keybindings::Matches("CycleAxis", keyCombination)
     && (
       (
         nudgeMode == NudgeMode::Rotation
@@ -1059,7 +1078,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       );
       // check if key has changed
       // FIXME: they sometimes are not equal even though the direction hasn't changed
-      vec3 newNudgeDir = keyToVector(key);
+      vec3 newNudgeDir = keyToVector(keyCombination);
       if (!VectorsEqual(nudgeDir, newNudgeDir)) {
         notifyNudgeKeyChange = Time::get_Now();
       }

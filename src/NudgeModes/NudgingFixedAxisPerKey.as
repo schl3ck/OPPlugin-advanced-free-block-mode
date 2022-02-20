@@ -1,42 +1,42 @@
 namespace NudgingFixedAxisPerKey {
-  vec3 keyToVector(VirtualKey key) {
+  vec3 keyToVector(const VirtualKey[] &in keys) {
     vec3 axis = vec3(0, 0, 0);
-    if (key == Keybindings::GetKey("Left")) {
+    if (Keybindings::Matches("Left", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.x -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x -= 1;
       }
-    } else if (key == Keybindings::GetKey("Right")) {
+    } else if (Keybindings::Matches("Right", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.x += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x += 1;
       }
-    } else if (key == Keybindings::GetKey("Forward")) {
+    } else if (Keybindings::Matches("Forward", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.z += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z += 1;
       }
-    } else if (key == Keybindings::GetKey("Backward")) {
+    } else if (Keybindings::Matches("Backward", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.z -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z -= 1;
       }
-    } else if (key == Keybindings::GetKey("Down")) {
+    } else if (Keybindings::Matches("Down", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.y -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
       } else {
         axis.y -= 1;
       }
-    } else if (key == Keybindings::GetKey("Up")) {
+    } else if (Keybindings::Matches("Up", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
         axis.y += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
@@ -51,7 +51,7 @@ namespace NudgingFixedAxisPerKey {
     return axis;
   }
 
-  VirtualKey vectorToKey(vec3 vector) {
+  VirtualKey[] vectorToKey(vec3 vector) {
     if (localCoords || nudgeMode == NudgeMode::Pivot) {
       // rotate vector back
       mat4 Ry = mat4::Rotate(-cursorYaw, vec3(0, 1, 0));
@@ -61,7 +61,7 @@ namespace NudgingFixedAxisPerKey {
       mat4 R = Rx * Rz * Ry;
       vector = vecRemoveLastD(R * vector);
     }
-    VirtualKey[] keys = {
+    VirtualKey[][] keys = {
       Keybindings::GetKey("Left"),
       Keybindings::GetKey("Right"),
       Keybindings::GetKey("Up"),
@@ -82,6 +82,6 @@ namespace NudgingFixedAxisPerKey {
         return keys[i];
       }
     }
-    return nullKey;
+    return {};
   }
 }

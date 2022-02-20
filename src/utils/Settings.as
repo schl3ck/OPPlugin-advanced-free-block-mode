@@ -85,14 +85,15 @@ class SettingKeyInfo {
   void renderKey() {
     UI::PushID(displayName);
     printUITextOnButtonBaseline(
-      displayName + ": \\$f90" + Keybindings::GetKeyString(name) + "\\$z "
+      displayName + ": " + Keybindings::GetKeyString(name, true) + " "
     );
     if (UI::Button("Change")) {
+      ModifierKeys::Reset();
       @settingKeyInfoWaitingForKey = this;
     }
     UI::SameLine();
     if (UI::Button("Unset")) {
-      Keybindings::SetKey(name, VirtualKey(0));
+      Keybindings::SetKey(name, {});
     }
     UI::SameLine();
     if (UI::Button("Reset")) {
