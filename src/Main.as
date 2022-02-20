@@ -471,7 +471,7 @@ void RenderInterface() {
     }
 
     string keysForHeaderBar = "";
-    string empty = Icons::Kenney::ButtonEmpty;
+    string empty = Icons::SquareO;
     for (uint i = 0; i < keysForNudgeDirs.Length; i++) {
       VirtualKey[] k = keysForNudgeDirs[i];
       string s = k.Length == 0 ? "\\$f90" + empty + "\\$z" : virtualKeyToString(k, true);
@@ -480,6 +480,7 @@ void RenderInterface() {
       }
       keysForHeaderBar += s;
     }
+    keysForHeaderBar += " ";
 
     bool isPosOrRotNudgeMode = nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Rotation;
     bool isPivotNudgeMode = nudgeMode == NudgeMode::Pivot;
