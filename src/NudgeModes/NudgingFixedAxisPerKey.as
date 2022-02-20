@@ -3,14 +3,14 @@ namespace NudgingFixedAxisPerKey {
     vec3 axis = vec3(0, 0, 0);
     if (Keybindings::Matches("Left", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.x -= settingStepSizePosition 
+        axis.x += settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x -= 1;
       }
     } else if (Keybindings::Matches("Right", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.x += settingStepSizePosition 
+        axis.x -= settingStepSizePosition 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x += 1;
