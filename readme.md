@@ -47,6 +47,16 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 You can find the source code to this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
 
 # Changelog
+## v1.3.0 - 2022-02-20
+* Add ability to use modifier keys for keyboard shortcuts
+* Organize sections of UI into collapsing headers
+* Fix empty strings as UI element id
+* Fix swapped left & right arrow keys for fixedAxisPerKey mode
+* Fix block visualizer not finding a block size
+* Fix blocking arrow keys when block is not fixed
+* Refactor keybindings for better internal structure (you shouldn't notice anything)
+* Remove alpha on keybinding window
+
 ## v1.2.1 - 2021-09-06
 * Fix plugin crash on start because of wrong path separator
 * Tidy up interface
