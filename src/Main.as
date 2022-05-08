@@ -930,26 +930,26 @@ void RenderInterface() {
   }
 }
 
-bool OnKeyPress(bool down, VirtualKey key) {
+UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
   if (settingKeyInfoWaitingForKey !is null) {
     if (!ModifierKeys::Handle(down, key)) {
       auto keys = ModifierKeys::GetKeys(key);
       Keybindings::SetKey(settingKeyInfoWaitingForKey.name, keys);
       @settingKeyInfoWaitingForKey = null;
-      return true;
+      return UI::InputBlocking::Block;
     }
   }
   
   if (!settingShowInterface)
-    return false;
+    return UI::InputBlocking::DoNothing;
   CGameCtnEditorFree@ editor = GetMapEditor();
   if (editor is null)
-    return false;
+    return UI::InputBlocking::DoNothing;
 
   // maybe handles it twice, but that is no problem
   ModifierKeys::Handle(down, key);
 
-  if (!down) return false;
+  if (!down) return UI::InputBlocking::DoNothing;
 
   bool handled = false;
   vec3 move = vec3();
@@ -979,7 +979,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       + " the block: \\$z"
       + tostring(settingNudgeModeRotation)
     );
-    return false;
+    return UI::InputBlocking::DoNothing;
   }
 
   VirtualKey[] keyCombination = ModifierKeys::GetKeys(key);
@@ -1087,7 +1087,7 @@ bool OnKeyPress(bool down, VirtualKey key) {
       handled = true;
     }
   }
-  return handled;
+  return handled ? UI::InputBlocking::Block : UI::InputBlocking::DoNothing;
 }
 
 void FocusCameraOnPivot() {

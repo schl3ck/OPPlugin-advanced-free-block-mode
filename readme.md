@@ -47,6 +47,9 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 You can find the source code to this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
 
 # Changelog
+## v1.3.1 - 2022-05-08
+* Update callback functions to new signature
+
 ## v1.3.0 - 2022-02-20
 * Add ability to use modifier keys for keyboard shortcuts
 * Organize sections of UI into collapsing headers
