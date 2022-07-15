@@ -18,7 +18,7 @@ float Slope2Angle = Math::ToDeg(Math::Atan(16.0f / 32.0f));
 // machine precision of floats. is probably smaller but this should suffice
 float epsilon = 0.0001;
 
-Resources::Font@ font = Resources::GetFont("DroidSans-Bold.ttf");
+int font = nvg::LoadFont("DroidSans-Bold.ttf");
 CoordinateSystem@ coordinateSystem = CoordinateSystem();
 BlockVisualizer@ blockVisualizer = BlockVisualizer();
 vec2 backgroundSize = vec2();
@@ -29,6 +29,8 @@ uint64 notifyNudgeKeyChange = 0;
 string nudgeModeHelpText;
 SettingKeyInfo@ settingKeyInfoWaitingForKey;
 uint64 lastSettingsRendered = 0;
+
+// Editor.PluginMapType.PlaceMode or EditMode
 
 enum NudgeMode {
   Position,

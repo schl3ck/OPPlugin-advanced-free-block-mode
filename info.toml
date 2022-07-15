@@ -4,7 +4,7 @@ author = "schl3ck"
 category = "Map Editor"
 
 siteid = 109
-version = "1.3.1"
+version = "1.3.2"
 
 [script]
 imports = [ "Icons.as", "Permissions.as" ]
