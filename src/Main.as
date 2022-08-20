@@ -323,7 +323,7 @@ void RenderInterface() {
       int(settingCoordinateSystemPosition.y)
     );
     UI::Begin(
-      "\\$f90" + Icons::ExpandArrowsAlt + "\\$z Coordinate System",
+      "\\$f90" + Icons::Arrows + "\\$z Coordinate System",
       UI::WindowFlags::NoResize
       | UI::WindowFlags::NoCollapse
       | UI::WindowFlags::NoDocking

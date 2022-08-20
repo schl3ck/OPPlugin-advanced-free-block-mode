@@ -47,6 +47,9 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 You can find the source code to this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
 
 # Changelog
+## v1.3.3 - 2022-08-20
+* Replace deprecated icon in the window that moves the coordinate system
+
 ## v1.3.2 - 2022-07-15
 * Use new font loading system
 
