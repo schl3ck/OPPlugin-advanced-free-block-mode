@@ -58,7 +58,8 @@ void OnSettingsSave(Settings::Section& section) {
   section.SetString("keybindings", Keybindings::Serialize());
 }
 
-void RenderSettings() {
+[SettingsTab name="Keybinds" icon="KeyboardO"]
+void KeybindsSettingsPage() {
   lastSettingsRendered = Time::get_Now();
 
   if (UI::Button("Reset to default")) {
