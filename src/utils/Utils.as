@@ -83,12 +83,12 @@ string debugKeyToString(const VirtualKey[] &in keys) {
   return "{ " + s + " }";
 }
 
-string readPluginFile(string filename) {
+string readPluginFile(string &in filename) {
   IO::FileSource f(filename);
   return f.ReadToEnd();
 }
 
-string replaceIcons(string text) {
+string replaceIcons(string &in text) {
   string[] iconNames = {
     "LongArrowLeft",
     "LongArrowRight",
@@ -109,7 +109,7 @@ string replaceIcons(string text) {
   return res;
 }
 
-void printUITextOnButtonBaseline(string text) {
+void printUITextOnButtonBaseline(string &in text) {
   vec2 cursorPos = UI::GetCursorPos();
   UI::SetCursorPos(cursorPos + vec2(0, 4));
   UI::Text(text);

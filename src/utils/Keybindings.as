@@ -13,7 +13,7 @@ namespace Keybindings {
       this.description = other.description;
       this.oldKey = copyKeys(other.oldKey);
     }
-    KeyInfo(string name, const VirtualKey[] &in key, string description, const VirtualKey[] &in oldKey) {
+    KeyInfo(string &in name, const VirtualKey[] &in key, string &in description, const VirtualKey[] &in oldKey) {
       this.name = name;
       this.defaultKey = key;
       this.key = key;
@@ -51,7 +51,7 @@ namespace Keybindings {
     KeyInfo("FocusOnceOnPivot", {}, "Focus the camera once on the pivot point", {})
   };
 
-  KeyInfo@ Find(string name) {
+  KeyInfo@ Find(string &in name) {
     for (uint i = 0; i < keys.Length; i++) {
       if (keys[i].name == name)
         return keys[i];
@@ -59,14 +59,14 @@ namespace Keybindings {
     return null;
   }
 
-  void SetKey(string name, const VirtualKey[] &in key) {
+  void SetKey(string &in name, const VirtualKey[] &in key) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       k.key = key;
     }
   }
 
-  VirtualKey[] GetKey(string name) {
+  VirtualKey[] GetKey(string &in name) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       return k.key;
@@ -84,18 +84,18 @@ namespace Keybindings {
     }
     return true;
   }
-  bool Matches(string name, const VirtualKey[] &in keys) {
+  bool Matches(string &in name, const VirtualKey[] &in keys) {
     VirtualKey[] forName = GetKey(name);
     return Equals(keys, forName);
   }
-  string GetKeyString(string name, bool colorize = false) {
+  string GetKeyString(string &in name, bool colorize = false) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       return virtualKeyToString(k.key, colorize);
     }
     return "";
   }
-  string GetKeyDescription(string name) {
+  string GetKeyDescription(string &in name) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       return k.description;
@@ -103,7 +103,7 @@ namespace Keybindings {
     return "";
   }
 
-  VirtualKey[] GetDefaultKey(string name) {
+  VirtualKey[] GetDefaultKey(string &in name) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       return k.defaultKey;
@@ -111,7 +111,7 @@ namespace Keybindings {
     return {};
   }
 
-  void ResetKey(string name) {
+  void ResetKey(string &in name) {
     KeyInfo@ k = Find(name);
     if (k !is null) {
       k.key = copyKeys(k.defaultKey);
@@ -147,7 +147,7 @@ namespace Keybindings {
     return Json::Write(json);
   }
 
-  void Deserialize(string text) {
+  void Deserialize(string &in text) {
     Json::Value json = Json::Parse(text);
     if (json.GetType() != Json::Type::Object) return;
     string[]@ names = json.GetKeys();

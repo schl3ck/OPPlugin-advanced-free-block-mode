@@ -65,7 +65,7 @@ void KeybindsSettingsPage() {
   if (UI::Button("Reset to default")) {
     Keybindings::ResetAllKeys();
   }
-  
+
   SettingKeyInfo@[] keyInfos;
   for (uint i = 0; i < Keybindings::keys.Length; i++) {
     auto keyInfo = SettingKeyInfo(Keybindings::keys[i].name);
@@ -78,7 +78,7 @@ class SettingKeyInfo {
   string name;
   string displayName;
 
-  SettingKeyInfo(string name) {
+  SettingKeyInfo(string &in name) {
     this.name = name;
     displayName = Regex::Replace(name, "([a-z])([A-Z])", "$1 $2");
   }
