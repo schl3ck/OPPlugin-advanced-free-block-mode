@@ -43,18 +43,14 @@ bool settingShowHelpForNudgeModes = false;
 [Setting name="Show tooltip when the nudge direction of the last pressed key has changed" category="Main"]
 bool settingShowTooltipOnNudgeModeNotify = true;
 
-// this is written manually so it doesn't show up
+[Setting hidden]
 bool settingFirstUse = true;
 
 void OnSettingsLoad(Settings::Section& section) {
-  settingFirstUse = section.GetBool("settingFirstUse", settingFirstUse);
-
   Keybindings::Deserialize(section.GetString("keybindings", "{}"));
 }
 
 void OnSettingsSave(Settings::Section& section) {
-  section.SetBool("settingFirstUse", settingFirstUse);
-
   section.SetString("keybindings", Keybindings::Serialize());
 }
 
