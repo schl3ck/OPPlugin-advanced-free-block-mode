@@ -32,6 +32,9 @@ uint64 lastSettingsRendered = 0;
 
 // Editor.PluginMapType.PlaceMode or EditMode
 
+bool nudgePositionUIHeaderIsOpen = false;
+bool nudgeRotationUIHeaderIsOpen = false;
+
 enum NudgeMode {
   Position,
   Rotation,
@@ -495,7 +498,9 @@ void RenderInterface() {
     if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
       positionHeaderTitle += " " + keysForHeaderBar;
     }
-    if (UI::CollapsingHeader(positionHeaderTitle)) {
+    UI::SetNextItemOpen(nudgePositionUIHeaderIsOpen, UI::Cond::Always);
+    nudgePositionUIHeaderIsOpen = UI::CollapsingHeader(positionHeaderTitle);
+    if (nudgePositionUIHeaderIsOpen) {
       if (isPosOrRotNudgeMode) {
         // ====================================== Fixed position
         UI::Columns(3, "2", false);
@@ -631,13 +636,12 @@ void RenderInterface() {
       }
     }
 
-
-    if (
-      UI::CollapsingHeader(
-        "Fixed rotation"
-        + (nudgeMode == NudgeMode::Rotation ? " " + keysForHeaderBar : "")
-      )
-    ) {
+    UI::SetNextItemOpen(nudgeRotationUIHeaderIsOpen, UI::Cond::Always);
+    nudgeRotationUIHeaderIsOpen = UI::CollapsingHeader(
+      "Fixed rotation"
+      + (nudgeMode == NudgeMode::Rotation ? " " + keysForHeaderBar : "")
+    );
+    if (nudgeRotationUIHeaderIsOpen) {
       if (settingRotationInDeg) {
         cursorYaw = Math::ToDeg(cursorYaw);
         cursorPitch = Math::ToDeg(cursorPitch);
