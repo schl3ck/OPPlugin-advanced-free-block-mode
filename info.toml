@@ -5,3 +5,6 @@ category = "Map Editor"
 
 siteid = 109
 version = "1.3.3"
+
+[script]
+dependencies = ["Camera"]
