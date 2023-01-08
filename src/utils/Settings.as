@@ -55,6 +55,9 @@ int settingBlockVisualizerScale = 50;
 [Setting hidden]
 bool settingFirstUse = true;
 
+[Setting hidden]
+bool settingNudgeRelativeToBlockOrientation = false;
+
 void OnSettingsLoad(Settings::Section& section) {
   Keybindings::Deserialize(section.GetString("keybindings", "{}"));
 }

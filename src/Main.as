@@ -6,7 +6,6 @@ float cursorPitch = 0;
 float cursorRoll = 0;
 float blockPitch = 0;
 float blockRoll = 0;
-bool localCoords = false;
 NudgeMode nudgeMode = NudgeMode::Position;
 PositionNudgeMode positionNudgeMode = PositionNudgeMode::GridSizeMultiple;
 vec3 pivotPosition = vec3(0, 0, 0);
@@ -198,7 +197,7 @@ void renderCoordinateSystem(bool fromBlockVisualizer) {
   }
   coordinateSystem.Render(
     pos,
-    localCoords,
+    settingNudgeRelativeToBlockOrientation,
     cursorYaw,
     cursorPitch,
     cursorRoll,
@@ -433,7 +432,10 @@ void RenderInterface() {
     };
     VirtualKey[][] keysForNudgeDirs(nudgeDirs.Length);
     for (uint i = 0; i < nudgeDirs.Length; i++) {
-      if (nudgeMode == NudgeMode::Pivot || localCoords) {
+      if (
+        nudgeMode == NudgeMode::Pivot
+        || settingNudgeRelativeToBlockOrientation
+      ) {
         nudgeDirs[i] = rotateVec3(
           nudgeDirs[i],
           cursorYaw,
@@ -789,7 +791,7 @@ void RenderInterface() {
       UI::BeginDisabled(!fixCursorPosition);
       if (UI::Checkbox("Nudge pivot point", nudgeMode == NudgeMode::Pivot)) {
         nudgeMode = NudgeMode::Pivot;
-        localCoords = true;
+        settingNudgeRelativeToBlockOrientation = true;
       } else if (nudgeMode == NudgeMode::Pivot) {
         nudgeMode = NudgeMode::Rotation;
       }
@@ -811,7 +813,10 @@ void RenderInterface() {
         UI::TextDisabled(vecToString(pivotPosition, 3));
       }
 
-      localCoords = UI::Checkbox("Nudge relative to block rotation", localCoords);
+      settingNudgeRelativeToBlockOrientation = UI::Checkbox(
+        "Nudge relative to block rotation",
+        settingNudgeRelativeToBlockOrientation
+      );
       if (Keybindings::GetKey("ToggleRelativeNudging").Length > 0) {
         UI::SameLine();
         UI::TextDisabled(
@@ -1019,7 +1024,7 @@ UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
     refreshVariables = !refreshVariables;
     handled = true;
   } else if (Keybindings::Matches("ToggleRelativeNudging", keyCombination)) {
-    localCoords = !localCoords;
+    settingNudgeRelativeToBlockOrientation = !settingNudgeRelativeToBlockOrientation;
     handled = true;
   } else if (Keybindings::Matches("ToggleFixedCursor", keyCombination)) {
     fixCursorPosition = !fixCursorPosition;
@@ -1076,7 +1081,7 @@ UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
         cursorRoll,
         rotationDelta,
         axis,
-        localCoords
+        settingNudgeRelativeToBlockOrientation
       );
       cursorYaw = res[0];
       cursorPitch = res[1];
