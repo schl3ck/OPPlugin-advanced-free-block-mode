@@ -33,7 +33,7 @@ namespace NudgingRelativeToCam {
     };
     for (uint i = 0; i < dirs.Length; i++) {
       dirs[i] *= gridSize;
-      if (nudgeMode == NudgeMode::Pivot || localCoords) {
+      if (nudgeMode == NudgeMode::Pivot || settingNudgeRelativeToBlockOrientation) {
         dirs[i] = rotateVec3(
           dirs[i],
           cursorYaw,

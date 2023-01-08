@@ -45,14 +45,14 @@ namespace NudgingFixedAxisPerKey {
       }
     }
 
-    if (localCoords) {
+    if (settingNudgeRelativeToBlockOrientation) {
       axis = rotateVec3(axis, cursorYaw, cursorPitch, cursorRoll);
     }
     return axis;
   }
 
   VirtualKey[] vectorToKey(vec3 vector) {
-    if (localCoords || nudgeMode == NudgeMode::Pivot) {
+    if (settingNudgeRelativeToBlockOrientation || nudgeMode == NudgeMode::Pivot) {
       // rotate vector back
       mat4 Ry = mat4::Rotate(-cursorYaw, vec3(0, 1, 0));
       mat4 Rz = mat4::Rotate(-cursorPitch, vec3(0, 0, 1));
