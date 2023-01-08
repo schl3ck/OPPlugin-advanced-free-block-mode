@@ -41,12 +41,19 @@ When rendering the coordinate system and block visualizer on top of each other, 
 Download it from https://openplanet.nl/files/109. You can also find a tutorial there how to install the plugin.
 
 # Future plans
-* Maybe render a point on the screen showing the current pivot point in the map. Couldn't get that to work properly yet though.
+* Maybe support items. Unforunately I still haven't found a way to implement this.
 
 # Contribute
-You can find the source code to this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
+You can find the source code for this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
 
 # Changelog
+## v1.4.0 - 2023-01-08
+* Add point on screen to visualize the pivot point when in the correct editor mode
+* Fix applying nudge distance twice
+* Fix closing sections in the main window when switching nudge mode
+* Use new scripting functionality in the settings window
+* Improvements under the hood
+
 ## v1.3.3 - 2022-08-20
 * Replace deprecated icon in the window that moves the coordinate system
 
