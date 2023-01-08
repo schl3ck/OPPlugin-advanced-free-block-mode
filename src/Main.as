@@ -30,8 +30,6 @@ string nudgeModeHelpText;
 SettingKeyInfo@ settingKeyInfoWaitingForKey;
 uint64 lastSettingsRendered = 0;
 
-// Editor.PluginMapType.PlaceMode or EditMode
-
 bool nudgePositionUIHeaderIsOpen = false;
 bool nudgeRotationUIHeaderIsOpen = false;
 
@@ -95,6 +93,14 @@ void Main() {
     CGameCtnEditorFree@ editor = GetMapEditor();
     if (editor is null) {
       sleep(1000);
+      continue;
+    }
+    if (
+      editor.PluginMapType.PlaceMode != CGameEditorPluginMap::EPlaceMode::FreeBlock
+      && editor.PluginMapType.PlaceMode != CGameEditorPluginMap::EPlaceMode::FreeMacroblock
+    ) {
+      focusOnPivot = false;
+      sleep(100);
       continue;
     }
 
@@ -164,7 +170,11 @@ void Render() {
   }
 
   if (
-    settingShowPivotPoint
+    (
+      editor.PluginMapType.PlaceMode == CGameEditorPluginMap::EPlaceMode::FreeBlock
+      || editor.PluginMapType.PlaceMode == CGameEditorPluginMap::EPlaceMode::FreeMacroblock
+    )
+    && settingShowPivotPoint
     && (UI::IsOverlayShown() || settingShowPivotPointOnHiddenUI)
   ) {
     pivotInMap.Render(
