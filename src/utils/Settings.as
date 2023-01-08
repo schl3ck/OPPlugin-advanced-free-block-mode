@@ -1,27 +1,6 @@
 [Setting name="Show interface" category="Main"]
 bool settingShowInterface = false;
 
-[Setting name="Show coordinate system" category="Coordinate system"]
-bool settingShowCoordinateSystem = false;
-
-[Setting name="Scale" min=10 max=250 category="Coordinate system"]
-int settingCoordinateSystemScale = 50;
-
-[Setting name="Position" category="Coordinate system" description="Position of coordinate system & block visualizer"]
-vec2 settingCoordinateSystemPosition = vec2(200, 200);
-
-[Setting name="Move coordinate system" description="Use this to easily move the position" category="Coordinate system"]
-bool settingMoveCoordinateSystem = false;
-
-[Setting name="Show block visualizer" category="Block visualizer"]
-bool settingShowBlockVisualizer = false;
-
-[Setting name="Relative position" description="Relative to coordinate system. \"Center\" renders it on top of the coordinate system" category="Block visualizer"]
-BlockVisualizerPosition settingBlockVisualizerRelativePosition = BlockVisualizerPosition::Center;
-
-[Setting name="Scale" min=10 max=250 category="Block visualizer"]
-int settingBlockVisualizerScale = 50;
-
 [Setting name="Display rotations in degrees (otherwise in radians)" category="Main"]
 bool settingRotationInDeg = true;
 
@@ -42,6 +21,36 @@ bool settingShowHelpForNudgeModes = false;
 
 [Setting name="Show tooltip when the nudge direction of the last pressed key has changed" category="Main"]
 bool settingShowTooltipOnNudgeModeNotify = true;
+
+[Setting name="Show pivot point" category="Main"]
+bool settingShowPivotPoint = true;
+
+[Setting name="Show pivot point whin UI is hidden" category="Main"]
+bool settingShowPivotPointOnHiddenUI = false;
+
+[Setting name="Show coordinate system" category="Coordinate system"]
+bool settingShowCoordinateSystem = false;
+
+[Setting name="Show when UI is hidden" category="Coordinate system"]
+bool settingShowCoordinateSystemOnHiddenUI = false;
+
+[Setting name="Scale" min=10 max=250 category="Coordinate system"]
+int settingCoordinateSystemScale = 50;
+
+[Setting name="Position" category="Coordinate system" description="Position of coordinate system & block visualizer"]
+vec2 settingCoordinateSystemPosition = vec2(200, 200);
+
+[Setting name="Move coordinate system" description="Use this to easily move the position" category="Coordinate system"]
+bool settingMoveCoordinateSystem = false;
+
+[Setting name="Show block visualizer" category="Block visualizer"]
+bool settingShowBlockVisualizer = false;
+
+[Setting name="Relative position" description="Relative to coordinate system. \"Center\" renders it on top of the coordinate system" category="Block visualizer"]
+BlockVisualizerPosition settingBlockVisualizerRelativePosition = BlockVisualizerPosition::Center;
+
+[Setting name="Scale" min=10 max=250 category="Block visualizer"]
+int settingBlockVisualizerScale = 50;
 
 [Setting hidden]
 bool settingFirstUse = true;

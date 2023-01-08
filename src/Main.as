@@ -11,6 +11,7 @@ NudgeMode nudgeMode = NudgeMode::Position;
 PositionNudgeMode positionNudgeMode = PositionNudgeMode::GridSizeMultiple;
 vec3 pivotPosition = vec3(0, 0, 0);
 bool focusOnPivot = false;
+PivotInMap pivotInMap = PivotInMap();
 
 float BiSlopeAngle = Math::ToDeg(Math::Atan(8.0f / 32.0f));
 float Slope2Angle = Math::ToDeg(Math::Atan(16.0f / 32.0f));
@@ -134,42 +135,44 @@ void Main() {
 void Render() {
   CGameCtnEditorFree@ editor = GetMapEditor();
   if (editor is null) return;
-  // hide when openplanet is hidden
-  if (!UI::IsOverlayShown()) {
-    return;
+
+  if (UI::IsOverlayShown() || settingShowCoordinateSystemOnHiddenUI) {
+    backgroundSize = renderOverlayBackground();
+
+    if (settingShowBlockVisualizer) {
+      vec2 pos = vec2(settingCoordinateSystemPosition);
+      if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Right) {
+        pos.x += coordinateSystem.size.x;
+      }
+      if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Bottom) {
+        pos.y += coordinateSystem.size.y;
+      }
+      blockVisualizer.Render(
+        pos,
+        cursorYaw,
+        cursorPitch,
+        cursorRoll,
+        renderCoordinateSystem,
+        pivotPosition,
+        getTileSize(blockVisualizer.size)
+      );
+    }
+
+    renderCoordinateSystem(false);
   }
 
-  backgroundSize = renderOverlayBackground();
-
-  if (settingShowBlockVisualizer) {
-    vec2 pos = vec2(settingCoordinateSystemPosition);
-    if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Right) {
-      pos.x += coordinateSystem.size.x;
-    }
-    if (settingBlockVisualizerRelativePosition == BlockVisualizerPosition::Bottom) {
-      pos.y += coordinateSystem.size.y;
-    }
-    blockVisualizer.Render(
-      pos,
-      cursorYaw,
-      cursorPitch,
-      cursorRoll,
-      renderCoordinateSystem,
-      pivotPosition,
-      getTileSize(blockVisualizer.size)
+  if (
+    settingShowPivotPoint
+    && (UI::IsOverlayShown() || settingShowPivotPointOnHiddenUI)
+  ) {
+    pivotInMap.Render(
+      cursorPosition + rotateVec3(
+        pivotPosition,
+        cursorYaw,
+        cursorPitch,
+        cursorRoll
+      )
     );
-  }
-
-  renderCoordinateSystem(false);
-
-  if (focusOnPivot && editor.Cursor.UseFreePos) {
-    nvg::BeginPath();
-    nvg::Circle(vec2(Draw::GetWidth(), Draw::GetHeight()) / 2, 3);
-    nvg::FillColor(vec4(0, 0, 1, 1));
-    nvg::Fill();
-    nvg::StrokeWidth(2);
-    nvg::StrokeColor(vec4(1, 0, 0, 1));
-    nvg::Stroke();
   }
 }
 void renderCoordinateSystem(bool fromBlockVisualizer) {
@@ -858,6 +861,11 @@ void RenderInterface() {
         FocusCameraOnPivot();
       }
 
+      settingShowPivotPoint = UI::Checkbox(
+        "Show pivot point",
+        settingShowPivotPoint
+      );
+
       editor.HideBlockHelpers = UI::Checkbox(
         "Hide block helpers",
         editor.HideBlockHelpers
@@ -990,7 +998,7 @@ UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
   vec3 axis = nudgeDir;
   if (!VectorsEqual(nudgeDir, vec3())) {
     if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-      move += nudgeDir * settingStepSizePosition;
+      move = nudgeDir * settingStepSizePosition;
     } else {
       rotationDelta = stepSizeRad;
     }
