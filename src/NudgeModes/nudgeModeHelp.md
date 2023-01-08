@@ -22,7 +22,7 @@ In this mode the keys are mapped to an axis depending on the camera's perspectiv
 * _Icons::LongArrowDown_: Moves the block backward (towards) from the camera's perspective (axis in the horizontal plane preferred)
 * _PageIcons::LongArrowUp_: Moves the block up from the camera's perspective (axis in the vertical plane preferred)
 * _PageIcons::LongArrowDown_: Moves the block down from the camera's perspective (axis in the vertical plane preferred)
-Movements are along the axis and rotations are applied such that it rotates in the same direction as a car tire would when pushed that way (except the vertical axis, there it only rotates around the axis).
+Movements are along the axis and rotations are applied such that it rotates in the same direction as a car tire would when pushed that way.
 
 ### SelectedAxis
 In this mode you select a single axis by repeatedly pressing _B_, then move or rotate the block along/around that axis by pressing _Icons::LongArrowLeft_ & _Icons::LongArrowRight_.
