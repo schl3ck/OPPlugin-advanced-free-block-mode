@@ -19,8 +19,7 @@ namespace NudgingSelectedAxis {
             positionNudgeMode == PositionNudgeMode::GridSizeMultiple
             ? gridSizeMultiple
             : vec3(1, 1, 1)
-          )
-          * settingStepSizePosition;
+          );
       } else {
         step -= vec3(1, 1, 1);
       }
@@ -33,8 +32,7 @@ namespace NudgingSelectedAxis {
             positionNudgeMode == PositionNudgeMode::GridSizeMultiple
             ? gridSizeMultiple
             : vec3(1, 1, 1)
-          )
-          * settingStepSizePosition;
+          );
       } else {
         step += vec3(1, 1, 1);
       }

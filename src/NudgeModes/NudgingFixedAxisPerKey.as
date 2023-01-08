@@ -3,42 +3,42 @@ namespace NudgingFixedAxisPerKey {
     vec3 axis = vec3(0, 0, 0);
     if (Keybindings::Matches("Left", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.x += settingStepSizePosition 
+        axis.x += 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x -= 1;
       }
     } else if (Keybindings::Matches("Right", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.x -= settingStepSizePosition 
+        axis.x -= 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.x += 1;
       }
     } else if (Keybindings::Matches("Forward", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.z += settingStepSizePosition 
+        axis.z += 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z += 1;
       }
     } else if (Keybindings::Matches("Backward", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.z -= settingStepSizePosition 
+        axis.z -= 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 32 : 1);
       } else {
         axis.z -= 1;
       }
     } else if (Keybindings::Matches("Down", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.y -= settingStepSizePosition 
+        axis.y -= 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
       } else {
         axis.y -= 1;
       }
     } else if (Keybindings::Matches("Up", keys)) {
       if (nudgeMode == NudgeMode::Position || nudgeMode == NudgeMode::Pivot) {
-        axis.y += settingStepSizePosition 
+        axis.y += 1 
           * (positionNudgeMode == PositionNudgeMode::GridSizeMultiple ? 8 : 1);
       } else {
         axis.y += 1;
