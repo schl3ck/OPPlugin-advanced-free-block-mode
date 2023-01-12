@@ -86,7 +86,7 @@ class SettingKeyInfo {
   string name;
   string displayName;
 
-  SettingKeyInfo(string &in name) {
+  SettingKeyInfo(const string &in name) {
     this.name = name;
     displayName = Regex::Replace(name, "([a-z])([A-Z])", "$1 $2");
   }

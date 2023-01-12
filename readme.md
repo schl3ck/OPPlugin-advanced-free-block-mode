@@ -47,6 +47,9 @@ Download it from https://openplanet.nl/files/109. You can also find a tutorial t
 You can find the source code for this plugin on [GitHub](https://github.com/schl3ck/OPPlugin-advanced-free-block-mode)
 
 # Changelog
+## v1.4.1 - 2023-01-12
+* Performance improvements
+
 ## v1.4.0 - 2023-01-08
 * Add point on screen to visualize the pivot point when in the correct editor mode
 * Fix applying nudge distance twice
