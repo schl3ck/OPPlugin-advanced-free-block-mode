@@ -13,7 +13,7 @@ namespace Keybindings {
       this.description = other.description;
       this.oldKey = copyKeys(other.oldKey);
     }
-    KeyInfo(const const string &in name, const VirtualKey[] &in key, const const string &in description, const VirtualKey[] &in oldKey) {
+    KeyInfo(const string &in name, const VirtualKey[] &in key, const string &in description, const VirtualKey[] &in oldKey) {
       this.name = name;
       this.defaultKey = key;
       this.key = key;
