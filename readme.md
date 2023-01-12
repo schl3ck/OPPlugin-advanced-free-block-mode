@@ -38,7 +38,7 @@ Also the block may flicker sometimes between the fixed position and your mouse c
 When rendering the coordinate system and block visualizer on top of each other, some lines may be on top of others when they shouldn't be.
 
 # How to install
-Download it from https://openplanet.nl/files/109. You can also find a tutorial there how to install the plugin.
+Download it from https://openplanet.nl/files/109. You can also find a tutorial there on how to install the plugin.
 
 # Future plans
 * Maybe support items. Unforunately I still haven't found a way to implement this.
